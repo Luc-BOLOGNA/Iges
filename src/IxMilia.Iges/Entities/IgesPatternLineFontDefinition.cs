@@ -11,8 +11,8 @@ namespace IxMilia.Iges.Entities
         public List<double> SegmentLengths { get; private set; }
         public int DisplayMask { get; set; }
 
-        public IgesPatternLineFontDefinition()
-            : base()
+        public IgesPatternLineFontDefinition(IgesFile file)
+            : base(file)
         {
             this.FormNumber = 2;
             SegmentLengths = new List<double>();
@@ -26,7 +26,7 @@ namespace IxMilia.Iges.Entities
                 SegmentLengths.Add(Double(parameters, i + 1));
             }
 
-            DisplayMask = int.Parse(StringOrDefault(parameters, segmentCount + 1, "0"), NumberStyles.HexNumber);
+            DisplayMask = int.Parse(String(parameters, segmentCount + 1, "0"), NumberStyles.HexNumber);
             return segmentCount + 2;
         }
 

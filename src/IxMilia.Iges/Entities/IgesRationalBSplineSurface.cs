@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -32,7 +33,7 @@ namespace IxMilia.Iges.Entities
         public List<double> FirstKnotValueSequence { get; private set; }
         public List<double> SecondKnotValueSequence { get; private set; }
         public double[,] Weights { get; set; }
-        public IgesPoint[,] ControlPoints { get; set; }
+        public Point3D[,] ControlPoints { get; set; }
 
         public double FirstParametricStartingValue { get; set; }
         public double FirstParametricEndingValue { get; set; }
@@ -45,8 +46,8 @@ namespace IxMilia.Iges.Entities
             set { FormNumber = (int)value; }
         }
 
-        public IgesRationalBSplineSurface()
-            : base()
+        public IgesRationalBSplineSurface(IgesFile file)
+            : base(file)
         {
             FirstKnotValueSequence = new List<double>();
             SecondKnotValueSequence = new List<double>();
@@ -55,16 +56,16 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            var k1 = Integer(parameters, index++);
-            var k2 = Integer(parameters, index++);
-            var m1 = Integer(parameters, index++);
-            var m2 = Integer(parameters, index++);
+            var k1 = Integer(parameters, ref index);
+            var k2 = Integer(parameters, ref index);
+            var m1 = Integer(parameters, ref index);
+            var m2 = Integer(parameters, ref index);
 
-            IsClosedInFirstParametricVariable = Boolean(parameters, index++);
-            IsClosedInSecondParametricVariable = Boolean(parameters, index++);
-            IsPolynomial = Boolean(parameters, index++);
-            IsPeriodicInFirstParametricVariable = Boolean(parameters, index++);
-            IsPeriodicInSecondParametricVariable = Boolean(parameters, index++);
+            IsClosedInFirstParametricVariable = Boolean(parameters, ref index);
+            IsClosedInSecondParametricVariable = Boolean(parameters, ref index);
+            IsPolynomial = Boolean(parameters, ref index);
+            IsPeriodicInFirstParametricVariable = Boolean(parameters, ref index);
+            IsPeriodicInSecondParametricVariable = Boolean(parameters, ref index);
 
             var n1 = 1 + k1 - m1;
             var n2 = 1 + k2 - m2;
@@ -73,12 +74,12 @@ namespace IxMilia.Iges.Entities
 
             for (int i = 0; i < a + 1; i++)
             {
-                FirstKnotValueSequence.Add(Double(parameters, index++));
+                FirstKnotValueSequence.Add(Double(parameters, ref index));
             }
 
             for (int i = 0; i < b + 1; i++)
             {
-                SecondKnotValueSequence.Add(Double(parameters, index++));
+                SecondKnotValueSequence.Add(Double(parameters, ref index));
             }
 
             Weights = new double[k1 + 1, k2 + 1];
@@ -86,26 +87,26 @@ namespace IxMilia.Iges.Entities
             {
                 for (int i = 0; i < k1 + 1; i++)
                 {
-                    Weights[i, j] = Double(parameters, index++);
+                    Weights[i, j] = Double(parameters, ref index);
                 }
             }
 
-            ControlPoints = new IgesPoint[k1 + 1, k2 + 1];
+            ControlPoints = new Point3D[k1 + 1, k2 + 1];
             for (int j = 0; j < k2 + 1; j++)
             {
                 for (int i = 0; i < k1 + 1; i++)
                 {
-                    var x = Double(parameters, index++);
-                    var y = Double(parameters, index++);
-                    var z = Double(parameters, index++);
-                    ControlPoints[i, j] = new IgesPoint(x, y, z);
+                    var x = Double(parameters, ref index);
+                    var y = Double(parameters, ref index);
+                    var z = Double(parameters, ref index);
+                    ControlPoints[i, j] = new Point3D(x, y, z);
                 }
             }
 
-            FirstParametricStartingValue = Double(parameters, index++);
-            FirstParametricEndingValue = Double(parameters, index++);
-            SecondParametricStartingValue = Double(parameters, index++);
-            SecondParametricEndingValue = Double(parameters, index++);
+            FirstParametricStartingValue = Double(parameters, ref index);
+            FirstParametricEndingValue = Double(parameters, ref index);
+            SecondParametricStartingValue = Double(parameters, ref index);
+            SecondParametricEndingValue = Double(parameters, ref index);
 
             return index;
         }

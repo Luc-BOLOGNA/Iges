@@ -14,22 +14,22 @@ namespace IxMilia.Iges.Entities
         public override IgesEntityType EntityType { get { return IgesEntityType.FiniteElement; } }
         public override IgesElementEdgeOrder EdgeOrder { get { throw new NotImplementedException(); } }
 
-        public IgesFiniteElementDummy()
-            : base((IgesTopologyType)(-1))
+        public IgesFiniteElementDummy(IgesFile file)
+            : base(file, (IgesTopologyType)(-1))
         {
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            TopologyType = (IgesTopologyType)Integer(parameters, index++);
-            var nodeCount = Integer(parameters, index++);
+            TopologyType = (IgesTopologyType)Integer(parameters, ref index);
+            var nodeCount = Integer(parameters, ref index);
             for (var i = 0; i < nodeCount; i++)
             {
-                binder.BindEntity(Integer(parameters, index++), e => InternalNodes.Add(e as IgesNode));
+                binder.BindEntity(Integer(parameters, ref index), e => InternalNodes.Add(e as IgesNode));
             }
 
-            ElementTypeName = String(parameters, index++);
+            ElementTypeName = String(parameters, ref index);
             return index;
         }
 

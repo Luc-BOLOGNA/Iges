@@ -14,13 +14,13 @@ namespace IxMilia.Iges.Entities
         public double BlueIntensity { get; set; }
         public string Name { get; set; }
 
-        public IgesColorDefinition()
-            : this(1.0, 1.0, 1.0, null)
+        public IgesColorDefinition(IgesFile file)
+            : this(file, 1.0, 1.0, 1.0)
         {
         }
 
-        public IgesColorDefinition(double r, double g, double b, string name = null)
-            : base()
+        public IgesColorDefinition(IgesFile file, double r, double g, double b, string name = null)
+            : base(file)
         {
             this.SubordinateEntitySwitchType = IgesSubordinateEntitySwitchType.Independent;
             this.EntityUseFlag = IgesEntityUseFlag.Definition;

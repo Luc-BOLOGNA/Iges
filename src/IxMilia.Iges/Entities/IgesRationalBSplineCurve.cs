@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -25,10 +26,10 @@ namespace IxMilia.Iges.Entities
         public bool IsPeriodic { get; set; }
         public List<double> KnotValues { get; private set; }
         public List<double> Weights { get; private set; }
-        public List<IgesPoint> ControlPoints { get; private set; }
+        public List<Point3D> ControlPoints { get; private set; }
         public double StartParameter { get; set; }
         public double EndParameter { get; set; }
-        public IgesVector Normal { get; set; }
+        public Vector3D Normal { get; set; }
 
         public IgesSplineCurveType CurveType
         {
@@ -36,47 +37,47 @@ namespace IxMilia.Iges.Entities
             set { FormNumber = (int)value; }
         }
 
-        public IgesRationalBSplineCurve()
-            : base()
+        public IgesRationalBSplineCurve(IgesFile file)
+            : base(file)
         {
             KnotValues = new List<double>();
             Weights = new List<double>();
-            ControlPoints = new List<IgesPoint>();
+            ControlPoints = new List<Point3D>();
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            var k = Integer(parameters, index++); // upper index of sum
-            var m = Integer(parameters, index++); // degree of basis functions
-            IsPlanar = Boolean(parameters, index++);
-            IsClosed = Boolean(parameters, index++);
-            IsPolynomial = Boolean(parameters, index++);
-            IsPeriodic = Boolean(parameters, index++);
+            var k = Integer(parameters, ref index); // upper index of sum
+            var m = Integer(parameters, ref index); // degree of basis functions
+            IsPlanar = Boolean(parameters, ref index);
+            IsClosed = Boolean(parameters, ref index);
+            IsPolynomial = Boolean(parameters, ref index);
+            IsPeriodic = Boolean(parameters, ref index);
             var n = 1 + k - m;
             var a = n + 2 * m;
             for (int i = 0; i < a + 1; i++)
             {
-                KnotValues.Add(Double(parameters, index++));
+                KnotValues.Add(Double(parameters, ref index));
             }
 
             for (int i = 0; i < k + 1; i++)
             {
-                Weights.Add(Double(parameters, index++));
+                Weights.Add(Double(parameters, ref index));
             }
 
             for (int i = 0; i < k + 1; i++)
             {
-                var x = Double(parameters, index++);
-                var y = Double(parameters, index++);
-                var z = Double(parameters, index++);
-                ControlPoints.Add(new IgesPoint(x, y, z));
+                var x = Double(parameters, ref index);
+                var y = Double(parameters, ref index);
+                var z = Double(parameters, ref index);
+                ControlPoints.Add(new Point3D(x, y, z));
             }
 
-            StartParameter = Double(parameters, index++);
-            EndParameter = Double(parameters, index++);
+            StartParameter = Double(parameters, ref index);
+            EndParameter = Double(parameters, ref index);
             Normal = IsPlanar
-                ? new IgesVector(Double(parameters, index++), Double(parameters, index++), Double(parameters, index++))
+                ? new Vector3D(Double(parameters, ref index), Double(parameters, ref index), Double(parameters, ref index))
                 : IgesVector.ZAxis;
 
             return index;

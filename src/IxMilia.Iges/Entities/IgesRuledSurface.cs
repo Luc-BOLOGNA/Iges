@@ -24,13 +24,13 @@ namespace IxMilia.Iges.Entities
             set { FormNumber = value ? 0 : 1; }
         }
 
-        public IgesRuledSurface()
-            : base()
+        public IgesRuledSurface(IgesFile file)
+            : base(file)
         {
         }
 
-        public IgesRuledSurface(IgesEntity firstCurve, IgesEntity secondCurve)
-            : this()
+        public IgesRuledSurface(IgesFile file, IgesEntity firstCurve, IgesEntity secondCurve)
+            : this(file)
         {
             FirstCurve = firstCurve;
             SecondCurve = secondCurve;

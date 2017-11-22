@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,13 +26,13 @@ namespace IxMilia.Iges.Entities
 
         public IgesTextMirroringAxis MirroringAxis { get; set; }
         public IgesTextRotationType RotationType { get; set; }
-        public IgesPoint Location { get; set; }
+        public Point3D Location { get; set; }
         public string Value { get; set; }
 
         public IgesTextString()
         {
             SlantAngle = Math.PI / 2.0;
-            Location = IgesPoint.Origin;
+            Location = Point3D.Origin;
         }
 
         internal static IgesTextString ReadParameters(List<string> parameters, IgesReaderBinder binder, ref int index)
@@ -43,11 +44,11 @@ namespace IxMilia.Iges.Entities
 
         internal void PopulateFromParameters(List<string> parameters, IgesReaderBinder binder, ref int index)
         {
-            var charCount = IgesParameterReader.Integer(parameters, index++);
-            BoxWidth = IgesParameterReader.Double(parameters, index++);
-            BoxHeight = IgesParameterReader.Double(parameters, index++);
+            var charCount = IgesParameterReader.Integer(parameters, ref index);
+            BoxWidth = IgesParameterReader.Double(parameters, ref index);
+            BoxHeight = IgesParameterReader.Double(parameters, ref index);
 
-            var fontCode = IgesParameterReader.IntegerOrDefault(parameters, index++, 1);
+            var fontCode = IgesParameterReader.Integer(parameters, ref index, 1);
             if (fontCode < 0)
             {
                 binder.BindEntity(-fontCode, e => TextFontDefinition = e as IgesTextFontDefinition);
@@ -58,14 +59,12 @@ namespace IxMilia.Iges.Entities
                 FontCode = fontCode;
             }
 
-            SlantAngle = IgesParameterReader.Double(parameters, index++);
-            RotationAngle = IgesParameterReader.Double(parameters, index++);
-            MirroringAxis = (IgesTextMirroringAxis)IgesParameterReader.Integer(parameters, index++);
-            RotationType = (IgesTextRotationType)IgesParameterReader.Integer(parameters, index++);
-            Location.X = IgesParameterReader.Double(parameters, index++);
-            Location.Y = IgesParameterReader.Double(parameters, index++);
-            Location.Z = IgesParameterReader.Double(parameters, index++);
-            Value = IgesParameterReader.String(parameters, index++);
+            SlantAngle = IgesParameterReader.Double(parameters, ref index);
+            RotationAngle = IgesParameterReader.Double(parameters, ref index);
+            MirroringAxis = (IgesTextMirroringAxis)IgesParameterReader.Integer(parameters, ref index);
+            RotationType = (IgesTextRotationType)IgesParameterReader.Integer(parameters, ref index);
+            Location = IgesPoint.Point3D(parameters, ref index);
+            Value = IgesParameterReader.String(parameters, ref index);
         }
 
         internal virtual void WriteParameters(List<object> parameters, IgesWriterBinder binder)
@@ -87,9 +86,9 @@ namespace IxMilia.Iges.Entities
             parameters.Add(RotationAngle);
             parameters.Add((int)MirroringAxis);
             parameters.Add((int)RotationType);
-            parameters.Add(Location?.X ?? 0.0);
-            parameters.Add(Location?.Y ?? 0.0);
-            parameters.Add(Location?.Z ?? 0.0);
+            parameters.Add(Location.X);
+            parameters.Add(Location.Y);
+            parameters.Add(Location.Z);
             parameters.Add(Value);
         }
     }
@@ -123,8 +122,8 @@ namespace IxMilia.Iges.Entities
             set { FormNumber = (int)value; }
         }
 
-        public IgesGeneralNote()
-            : base()
+        public IgesGeneralNote(IgesFile file)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Annotation;
             Strings = new List<IgesTextString>();
@@ -133,7 +132,7 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            var stringCount = Integer(parameters, index++);
+            var stringCount = Integer(parameters, ref index);
             for (int i = 0; i < stringCount; i++)
             {
                 Strings.Add(IgesTextString.ReadParameters(parameters, binder, ref index));

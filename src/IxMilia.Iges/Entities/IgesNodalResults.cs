@@ -13,6 +13,11 @@ namespace IxMilia.Iges.Entities
 
     public class IgesNodalResults : IgesEntity
     {
+        public IgesNodalResults(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.NodalResults; } }
 
         public IgesResultType ResultsType
@@ -37,19 +42,19 @@ namespace IxMilia.Iges.Entities
             Results.Clear();
 
             int index = 0;
-            binder.BindEntity(Integer(parameters, index++), e => GeneralNote = e as IgesGeneralNote);
-            AnalysisSubcase = Integer(parameters, index++);
-            AnalysisTime = DateTime(parameters, index++);
-            var valueCount = Integer(parameters, index++);
-            var nodeCount = Integer(parameters, index++);
+            binder.BindEntity(Integer(parameters, ref index), e => GeneralNote = e as IgesGeneralNote);
+            AnalysisSubcase = Integer(parameters, ref index);
+            AnalysisTime = DateTime(parameters, ref index);
+            var valueCount = Integer(parameters, ref index);
+            var nodeCount = Integer(parameters, ref index);
             for (int i = 0; i < nodeCount; i++)
             {
                 var result = new IgesNodalResult();
-                int nodeNumber = Integer(parameters, index++); // not used
-                binder.BindEntity(Integer(parameters, index++), e => result.Node = e as IgesNode);
+                int nodeNumber = Integer(parameters, ref index); // not used
+                binder.BindEntity(Integer(parameters, ref index), e => result.Node = e as IgesNode);
                 for (int j = 0; j < valueCount; j++)
                 {
-                    result.Values.Add(Double(parameters, index++));
+                    result.Values.Add(Double(parameters, ref index));
                 }
 
                 Results.Add(result);

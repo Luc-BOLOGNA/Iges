@@ -37,6 +37,11 @@ namespace IxMilia.Iges.Entities
 
     public class IgesElementResults : IgesEntity
     {
+        public IgesElementResults(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.ElementResults; } }
 
         public IgesResultType ResultsType
@@ -56,31 +61,31 @@ namespace IxMilia.Iges.Entities
             Elements.Clear();
 
             int index = 0;
-            binder.BindEntity(Integer(parameters, index++), e => GeneralNote = e as IgesGeneralNote);
-            AnalysisSubcase = Integer(parameters, index++);
-            AnalysisTime = DateTime(parameters, index++);
-            var valueCount = Integer(parameters, index++);
-            ReportingType = (IgesResultsReportingType)Integer(parameters, index++);
-            var elementCount = Integer(parameters, index++);
+            binder.BindEntity(Integer(parameters, ref index), e => GeneralNote = e as IgesGeneralNote);
+            AnalysisSubcase = Integer(parameters, ref index);
+            AnalysisTime = DateTime(parameters, ref index);
+            var valueCount = Integer(parameters, ref index);
+            ReportingType = (IgesResultsReportingType)Integer(parameters, ref index);
+            var elementCount = Integer(parameters, ref index);
             for (int i = 0; i < elementCount; i++)
             {
                 var result = new IgesElementResult();
-                result.Identifier = Integer(parameters, index++);
-                binder.BindEntity(Integer(parameters, index++), e => result.Entity = e);
-                result.ElementTopologyType = Integer(parameters, index++);
-                result.LayerCount = Integer(parameters, index++);
-                result.DataLayerType = (IgesDataLayerType)Integer(parameters, index++);
-                var resultCount = Integer(parameters, index++);
-                result.RDRL = Integer(parameters, index++);
+                result.Identifier = Integer(parameters, ref index);
+                binder.BindEntity(Integer(parameters, ref index), e => result.Entity = e);
+                result.ElementTopologyType = Integer(parameters, ref index);
+                result.LayerCount = Integer(parameters, ref index);
+                result.DataLayerType = (IgesDataLayerType)Integer(parameters, ref index);
+                var resultCount = Integer(parameters, ref index);
+                result.RDRL = Integer(parameters, ref index);
                 for (int j = 0; j < resultCount; j++)
                 {
-                    result.Results.Add(Double(parameters, index++));
+                    result.Results.Add(Double(parameters, ref index));
                 }
 
-                var numberOfValues = Integer(parameters, index++); // should be `valueCount * result.LayerCount * resultCount`
+                var numberOfValues = Integer(parameters, ref index); // should be `valueCount * result.LayerCount * resultCount`
                 for (int j = 0; j < numberOfValues; j++)
                 {
-                    result.Values.Add(Double(parameters, index++));
+                    result.Values.Add(Double(parameters, ref index));
                 }
 
                 Elements.Add(result);

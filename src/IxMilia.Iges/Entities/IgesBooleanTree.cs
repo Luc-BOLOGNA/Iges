@@ -11,12 +11,12 @@ namespace IxMilia.Iges.Entities
 
         public IIgesBooleanTreeItem RootNode { get; set; }
 
-        public IgesBooleanTree()
-            : this(null)
+        public IgesBooleanTree(IgesFile file)
+            : this(null, file)
         {
         }
 
-        public IgesBooleanTree(IIgesBooleanTreeItem rootNode)
+        public IgesBooleanTree(IIgesBooleanTreeItem rootNode, IgesFile file) : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Geometry;
             RootNode = rootNode;
@@ -26,10 +26,10 @@ namespace IxMilia.Iges.Entities
         {
             var index = 0;
             var stack = new Stack<object>();
-            var parameterCount = Integer(parameters, index++);
+            var parameterCount = Integer(parameters, ref index);
             for (int i = 0; i < parameterCount; i++)
             {
-                var value = Integer(parameters, index++);
+                var value = Integer(parameters, ref index);
                 if (value < 0)
                 {
                     // negative index

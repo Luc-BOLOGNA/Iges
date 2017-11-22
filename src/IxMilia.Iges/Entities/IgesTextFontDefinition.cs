@@ -52,8 +52,8 @@ namespace IxMilia.Iges.Entities
         public int SupercedesCode { get; set; }
         public IgesTextFontDefinition SupercedesFont { get; set; }
 
-        public IgesTextFontDefinition()
-            : base()
+        public IgesTextFontDefinition(IgesFile file)
+            : base(file)
         {
             SubordinateEntitySwitchType = IgesSubordinateEntitySwitchType.Independent;
             EntityUseFlag = IgesEntityUseFlag.Definition;
@@ -81,16 +81,16 @@ namespace IxMilia.Iges.Entities
             for (int i = 0; i < count; i++)
             {
                 var character = new IgesTextFontDefinitionCharacter();
-                character.ASCIICode = Integer(parameters, index++);
-                character.CharacterOrigin.X = Integer(parameters, index++);
-                character.CharacterOrigin.Y = Integer(parameters, index++);
-                var penMovements = Integer(parameters, index++);
+                character.ASCIICode = Integer(parameters, ref index);
+                character.CharacterOrigin.X = Integer(parameters, ref index);
+                character.CharacterOrigin.Y = Integer(parameters, ref index);
+                var penMovements = Integer(parameters, ref index);
                 for (int j = 0; j < penMovements; j++)
                 {
                     var movement = new IgesTextFontDefinitionCharacterMovement();
-                    movement.IsUp = Boolean(parameters, index++);
-                    movement.Location.X = Integer(parameters, index++);
-                    movement.Location.Y = Integer(parameters, index++);
+                    movement.IsUp = Boolean(parameters, ref index);
+                    movement.Location.X = Integer(parameters, ref index);
+                    movement.Location.Y = Integer(parameters, ref index);
                     character.CharacterMovements.Add(movement);
                 }
 

@@ -1,24 +1,27 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
+
 namespace IxMilia.Iges.Entities
 {
     public class IgesAxisymmetricParabolicTriangle : IgesFiniteElement
     {
         public override IgesElementEdgeOrder EdgeOrder { get { return IgesElementEdgeOrder.Parabolic; } }
 
-        public IgesPoint P1 { get; set; }
-        public IgesPoint P2 { get; set; }
-        public IgesPoint P3 { get; set; }
-        public IgesPoint P4 { get; set; }
-        public IgesPoint P5 { get; set; }
+        public Point3D P1 { get; set; }
+        public Point3D P2 { get; set; }
+        public Point3D P3 { get; set; }
+        public Point3D P4 { get; set; }
+        public Point3D P5 { get; set; }
 
         public IgesAxisymmetricParabolicTriangle(
-            IgesPoint p1,
-            IgesPoint p2,
-            IgesPoint p3,
-            IgesPoint p4,
-            IgesPoint p5)
-            : base(IgesTopologyType.AxisymmetricParabolicTriangle)
+            IgesFile file,
+            Point3D p1,
+            Point3D p2,
+            Point3D p3,
+            Point3D p4,
+            Point3D p5)
+            : base(file, IgesTopologyType.AxisymmetricParabolicTriangle)
         {
             P1 = p1;
             P2 = p2;
@@ -29,16 +32,17 @@ namespace IxMilia.Iges.Entities
 
         protected override void AddNodes()
         {
-            InternalNodes.Add(new IgesNode(P1));
-            InternalNodes.Add(new IgesNode(P2));
-            InternalNodes.Add(new IgesNode(P3));
-            InternalNodes.Add(new IgesNode(P4));
-            InternalNodes.Add(new IgesNode(P5));
+            InternalNodes.Add(new IgesNode(File, P1));
+            InternalNodes.Add(new IgesNode(File, P2));
+            InternalNodes.Add(new IgesNode(File, P3));
+            InternalNodes.Add(new IgesNode(File, P4));
+            InternalNodes.Add(new IgesNode(File, P5));
         }
 
         internal static IgesAxisymmetricParabolicTriangle FromDummy(IgesFiniteElementDummy dummy)
         {
             return new IgesAxisymmetricParabolicTriangle(
+                dummy.File,
                 GetNodeOffset(dummy, 0),
                 GetNodeOffset(dummy, 1),
                 GetNodeOffset(dummy, 2),

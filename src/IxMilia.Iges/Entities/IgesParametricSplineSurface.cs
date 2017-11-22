@@ -67,8 +67,8 @@ namespace IxMilia.Iges.Entities
         public List<double> VBreakpoints { get; private set; }
         public IgesSplinePolynomialPatchSegment[,] SegmentCoefficients { get; set; }
 
-        public IgesParametricSplineSurface()
-            : base()
+        public IgesParametricSplineSurface(IgesFile file)
+            : base(file)
         {
             SplineType = IgesSplineType.Linear;
             UBreakpoints = new List<double>();
@@ -78,18 +78,18 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            this.SplineType = (IgesSplineType)Integer(parameters, index++);
-            this.IsCartesianProduct = Boolean(parameters, index++);
-            var m = Integer(parameters, index++);
-            var n = Integer(parameters, index++);
+            this.SplineType = (IgesSplineType)Integer(parameters, ref index);
+            this.IsCartesianProduct = Boolean(parameters, ref index);
+            var m = Integer(parameters, ref index);
+            var n = Integer(parameters, ref index);
             for (int i = 0; i < m; i++)
             {
-                UBreakpoints.Add(Double(parameters, index++));
+                UBreakpoints.Add(Double(parameters, ref index));
             }
 
             for (int i = 0; i < n; i++)
             {
-                VBreakpoints.Add(Double(parameters, index++));
+                VBreakpoints.Add(Double(parameters, ref index));
             }
 
             SegmentCoefficients = new IgesSplinePolynomialPatchSegment[m, n];
@@ -98,54 +98,54 @@ namespace IxMilia.Iges.Entities
                 for (int v = 0; v < n; v++)
                 {
                     SegmentCoefficients[u, v] = new IgesSplinePolynomialPatchSegment();
-                    SegmentCoefficients[u, v].AX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].BX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].CX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].DX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].EX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].FX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].GX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].HX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].KX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].LX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].MX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].NX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].PX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].QX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].RX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].SX = Double(parameters, index++);
-                    SegmentCoefficients[u, v].AY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].BY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].CY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].DY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].EY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].FY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].GY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].HY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].KY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].LY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].MY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].NY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].PY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].QY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].RY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].SY = Double(parameters, index++);
-                    SegmentCoefficients[u, v].AZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].BZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].CZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].DZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].EZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].FZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].GZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].HZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].KZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].LZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].MZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].NZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].PZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].QZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].RZ = Double(parameters, index++);
-                    SegmentCoefficients[u, v].SZ = Double(parameters, index++);
+                    SegmentCoefficients[u, v].AX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].BX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].CX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].DX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].EX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].FX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].GX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].HX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].KX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].LX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].MX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].NX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].PX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].QX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].RX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].SX = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].AY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].BY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].CY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].DY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].EY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].FY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].GY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].HY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].KY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].LY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].MY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].NY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].PY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].QY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].RY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].SY = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].AZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].BZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].CZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].DZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].EZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].FZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].GZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].HZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].KZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].LZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].MZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].NZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].PZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].QZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].RZ = Double(parameters, ref index);
+                    SegmentCoefficients[u, v].SZ = Double(parameters, ref index);
                     index += 48 * (u + 1);
                 }
 

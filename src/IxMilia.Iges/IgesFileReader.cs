@@ -13,10 +13,11 @@ namespace IxMilia.Iges
 {
     internal class IgesFileReader
     {
+        private static char FieldDelimiter = IgesFile.DefaultFieldDelimiter; // 1
+        private static char RecordDelimiter = IgesFile.DefaultRecordDelimiter; // 2
+
         public static IgesFile Load(Stream stream)
         {
-            var file = new IgesFile();
-            var allLines = new StreamReader(stream).ReadToEnd().Split("\n".ToCharArray()).Select(s => s.TrimEnd()).Where(line => !string.IsNullOrEmpty(line));
             string terminateLine = null;
             var startLines = new List<string>();
             var globalLines = new List<string>();
@@ -30,8 +31,12 @@ namespace IxMilia.Iges
                     { IgesSectionType.Parameter, parameterLines }
                 };
 
-            foreach (var line in allLines)
-            {
+            StreamReader reader = new StreamReader(stream);
+            while(!reader.EndOfStream){
+                string line = reader.ReadLine().TrimEnd();
+                if (string.IsNullOrEmpty(line))
+                    continue;
+
                 if (line.Length != 80)
                     throw new IgesException("Expected line length of 80 characters.");
                 var data = line.Substring(0, IgesFile.MaxDataLength);
@@ -46,15 +51,15 @@ namespace IxMilia.Iges
 
                     // verify terminate data and quit
                     var startCount = int.Parse(terminateLine.Substring(1, 7));
-                    var globalCount = int.Parse(terminateLine.Substring(9, 7));
-                    var directoryCount = int.Parse(terminateLine.Substring(17, 7));
-                    var parameterCount = int.Parse(terminateLine.Substring(25, 7));
                     if (startLines.Count != startCount)
                         throw new IgesException("Incorrect number of start lines reported");
+                    var globalCount = int.Parse(terminateLine.Substring(9, 7));
                     if (globalLines.Count != globalCount)
                         throw new IgesException("Incorrect number of global lines reported");
+                    var directoryCount = int.Parse(terminateLine.Substring(17, 7));
                     if (directoryLines.Count != directoryCount)
                         throw new IgesException("Incorrect number of directory lines reported");
+                    var parameterCount = int.Parse(terminateLine.Substring(25, 7));
                     if (parameterLines.Count != parameterCount)
                         throw new IgesException("Incorrect number of parameter lines reported");
                     break;
@@ -71,8 +76,8 @@ namespace IxMilia.Iges
 
             // don't worry if terminate line isn't present
 
-            ParseGlobalLines(file, globalLines);
-            var directoryEntries = ParseDirectoryLines(directoryLines);
+            var file = ParseGlobalLines(globalLines);
+            var directoryEntries = ParseDirectoryLines(file, directoryLines);
             var parameterMap = PrepareParameterLines(parameterLines, directoryEntries, file.FieldDelimiter, file.RecordDelimiter);
             PopulateEntities(file, directoryEntries, parameterMap);
 
@@ -87,12 +92,12 @@ namespace IxMilia.Iges
             ParsingComment
         }
 
-        private static List<IgesDirectoryData> ParseDirectoryLines(List<string> directoryLines)
+        private static List<IgesDirectoryData> ParseDirectoryLines(IgesFile file, List<string> directoryLines)
         {
             var directoryEntires = new List<IgesDirectoryData>();
             for (int i = 0; i < directoryLines.Count; i += 2)
             {
-                var dir = IgesDirectoryData.FromRawLines(directoryLines[i], directoryLines[i + 1]);
+                var dir = IgesDirectoryData.FromRawLines(file, directoryLines[i], directoryLines[i + 1]);
                 directoryEntires.Add(dir);
             }
 
@@ -219,7 +224,7 @@ namespace IxMilia.Iges
                 var dir = directoryEntries[i];
                 var parameterValues = parameterMap[dir.ParameterPointer].Item1;
                 var comment = parameterMap[dir.ParameterPointer].Item2;
-                var entity = IgesEntity.FromData(dir, parameterValues, binder);
+                var entity = IgesEntity.FromData(dir, parameterValues, binder, file);
                 if (entity != null)
                 {
                     entity.Comment = comment;
@@ -235,42 +240,47 @@ namespace IxMilia.Iges
             binder.BindRemainingEntities();
         }
 
-        private static void ParseGlobalLines(IgesFile file, List<string> globalLines)
+        private static IgesFile ParseGlobalLines(List<string> globalLines)
         {
             var fullString = string.Join(string.Empty, globalLines).TrimEnd();
             if (string.IsNullOrEmpty(fullString))
-                return;
+                return null;
 
             int index = 0;
-            ParseDelimiterCharacter(file, fullString, ref index, true); // 1
-            ParseDelimiterCharacter(file, fullString, ref index, false); // 2
-            file.Identification = ParseString(file, fullString, ref index); // 3
-            file.FullFileName = ParseString(file, fullString, ref index); // 4
-            file.SystemIdentifier = ParseString(file, fullString, ref index); // 5
-            file.SystemVersion = ParseString(file, fullString, ref index); // 6
-            file.IntegerSize = ParseInt(file, fullString, ref index); // 7
-            file.SingleSize = ParseInt(file, fullString, ref index); // 8
-            file.DecimalDigits = ParseInt(file, fullString, ref index); // 9
-            file.DoubleMagnitude = ParseInt(file, fullString, ref index); // 10
-            file.DoublePrecision = ParseInt(file, fullString, ref index); // 11
-            file.Identifier = ParseString(file, fullString, ref index); // 12
-            file.ModelSpaceScale = ParseDouble(file, fullString, ref index); // 13
-            file.ModelUnits = (IgesUnits)ParseInt(file, fullString, ref index, (int)file.ModelUnits); // 14
-            file.CustomModelUnits = ParseString(file, fullString, ref index); // 15
-            file.MaxLineWeightGraduations = ParseInt(file, fullString, ref index); // 16
-            file.MaxLineWeight = ParseDouble(file, fullString, ref index); // 17
-            file.TimeStamp = ParseDateTime(ParseString(file, fullString, ref index), file.TimeStamp); // 18
-            file.MinimumResolution = ParseDouble(file, fullString, ref index); // 19
-            file.MaxCoordinateValue = ParseDouble(file, fullString, ref index); // 20
-            file.Author = ParseString(file, fullString, ref index); // 21
-            file.Organization = ParseString(file, fullString, ref index); // 22
-            file.IgesVersion = (IgesVersion)ParseInt(file, fullString, ref index); // 23
-            file.DraftingStandard = (IgesDraftingStandard)ParseInt(file, fullString, ref index); // 24
-            file.ModifiedTime = ParseDateTime(ParseString(file, fullString, ref index), file.ModifiedTime); // 25
-            file.ApplicationProtocol = ParseString(file, fullString, ref index); // 26
+            FieldDelimiter = ParseDelimiterCharacter(fullString, ref index, true); // 1
+            RecordDelimiter = ParseDelimiterCharacter(fullString, ref index, false); // 2
+
+            return new IgesFile(
+                FieldDelimiter, // 1
+                RecordDelimiter, // 2
+                ParseString(fullString, ref index), // 3
+                ParseString(fullString, ref index), // 4
+                ParseString(fullString, ref index), // 5
+                ParseString(fullString, ref index), // 6
+                ParseInt(fullString, ref index), // 7
+                ParseInt(fullString, ref index), // 8
+                ParseInt(fullString, ref index), // 9
+                ParseInt(fullString, ref index), // 10
+                ParseInt(fullString, ref index), // 11
+                ParseString(fullString, ref index), // 12
+                ParseDouble(fullString, ref index), // 13
+                (IgesUnits)ParseInt(fullString, ref index, (int)IgesFile.DefaultModelUnits), // 14
+                ParseString(fullString, ref index), // 15
+                ParseInt(fullString, ref index), // 16
+                ParseDouble(fullString, ref index), // 17
+                ParseDateTime(ParseString(fullString, ref index), DateTime.Now), // 18
+                ParseDouble(fullString, ref index), // 19
+                ParseDouble(fullString, ref index), // 20
+                ParseString(fullString, ref index), // 21
+                ParseString(fullString, ref index), // 22
+                (IgesVersion)ParseInt(fullString, ref index), // 23
+                (IgesDraftingStandard)ParseInt(fullString, ref index), // 24
+                ParseDateTime(ParseString(fullString, ref index), DateTime.Now), // 25
+                ParseString(fullString, ref index) // 26
+           );
         }
 
-        private static void ParseDelimiterCharacter(IgesFile file, string str, ref int index, bool readFieldSeparator)
+        private static char ParseDelimiterCharacter(string str, ref int index, bool readFieldSeparator)
         {
             // verify length
             if (index >= str.Length)
@@ -281,7 +291,7 @@ namespace IxMilia.Iges
                 (str[index] == IgesFile.DefaultRecordDelimiter))
             {
                 index++;
-                return;
+                return (readFieldSeparator) ? IgesFile.DefaultFieldDelimiter : IgesFile.DefaultRecordDelimiter;
             }
 
             if (str[index] != '1')
@@ -299,33 +309,21 @@ namespace IxMilia.Iges
             if (index >= str.Length)
                 throw new IgesException("Expected delimiter character");
             var separator = str[index];
-            if (readFieldSeparator)
-            {
-                file.FieldDelimiter = separator;
-            }
-            else
-            {
-                if (separator == file.FieldDelimiter)
-                {
-                    throw new IgesException("Record delimiter cannot match field delimiter");
-                }
-
-                file.RecordDelimiter = separator;
-            }
             index++;
 
             // verify delimiter
             if (index >= str.Length)
                 throw new IgesException("Unexpected end of input");
-            separator = str[index];
-            if (separator != file.FieldDelimiter && separator != file.RecordDelimiter)
+            if (str[index] != FieldDelimiter && str[index] != RecordDelimiter)
                 throw new IgesException("Expected field or record delimiter");
             index++; // swallow it
+
+            return separator;
         }
 
-        private static string ParseString(IgesFile file, string str, ref int index, string defaultValue = null)
+        private static string ParseString(string str, ref int index, string defaultValue = null)
         {
-            if (index < str.Length && (str[index] == file.FieldDelimiter || str[index] == file.RecordDelimiter))
+            if (index < str.Length && (str[index] == FieldDelimiter || str[index] == RecordDelimiter))
             {
                 // swallow the delimiter and return the default
                 index++;
@@ -365,16 +363,16 @@ namespace IxMilia.Iges
 
             // verify delimiter and swallow
             if (index == str.Length - 1)
-                SwallowDelimiter(str, file.RecordDelimiter, ref index);
+                SwallowDelimiter(str, RecordDelimiter, ref index);
             else
-                SwallowDelimiter(str, file.FieldDelimiter, ref index);
+                SwallowDelimiter(str, FieldDelimiter, ref index);
 
             return value;
         }
 
-        private static int ParseInt(IgesFile file, string str, ref int index, int defaultValue = 0)
+        private static int ParseInt(string str, ref int index, int defaultValue = 0)
         {
-            if (index < str.Length && (str[index] == file.FieldDelimiter || str[index] == file.RecordDelimiter))
+            if (index < str.Length && (str[index] == FieldDelimiter || str[index] == RecordDelimiter))
             {
                 // swallow the delimiter and return the default
                 index++;
@@ -387,7 +385,7 @@ namespace IxMilia.Iges
             for (; index < str.Length; index++)
             {
                 var c = str[index];
-                if (c == file.FieldDelimiter || c == file.RecordDelimiter)
+                if (c == FieldDelimiter || c == RecordDelimiter)
                 {
                     index++; // swallow it
                     break;
@@ -404,9 +402,9 @@ namespace IxMilia.Iges
                 return int.Parse(sb.ToString());
         }
 
-        private static double ParseDouble(IgesFile file, string str, ref int index, double defaultValue = 0.0)
+        private static double ParseDouble(string str, ref int index, double defaultValue = 0.0)
         {
-            if (index < str.Length && (str[index] == file.FieldDelimiter || str[index] == file.RecordDelimiter))
+            if (index < str.Length && (str[index] == FieldDelimiter || str[index] == RecordDelimiter))
             {
                 // swallow the delimiter and return the default
                 index++;
@@ -419,7 +417,7 @@ namespace IxMilia.Iges
             for (; index < str.Length; index++)
             {
                 var c = str[index];
-                if (c == file.FieldDelimiter || c == file.RecordDelimiter)
+                if (c == FieldDelimiter || c == RecordDelimiter)
                 {
                     index++; // swallow it
                     break;

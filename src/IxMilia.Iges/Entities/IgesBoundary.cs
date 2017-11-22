@@ -45,8 +45,8 @@ namespace IxMilia.Iges.Entities
 
         private int _curveCount = 0;
 
-        public IgesBoundary()
-            : base()
+        public IgesBoundary(IgesFile file)
+            : base(file)
         {
             IsBounaryParametric = false;
             TrimCurvePreference = IgesTrimCurvePreference.Unspecified;
@@ -57,19 +57,19 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            this.IsBounaryParametric = Boolean(parameters, index++);
-            this.TrimCurvePreference = (IgesTrimCurvePreference)Integer(parameters, index++);
-            binder.BindEntity(Integer(parameters, index++), e => Entity = e);
-            _curveCount = Integer(parameters, index++);
+            this.IsBounaryParametric = Boolean(parameters, ref index);
+            this.TrimCurvePreference = (IgesTrimCurvePreference)Integer(parameters, ref index);
+            binder.BindEntity(Integer(parameters, ref index), e => Entity = e);
+            _curveCount = Integer(parameters, ref index);
             for (int i = 0; i < _curveCount; i++)
             {
                 var boundaryItem = new IgesBoundaryItem();
-                binder.BindEntity(Integer(parameters, index++), e => boundaryItem.Entity = e);
-                boundaryItem.IsReversed = Integer(parameters, index++) == 2;
-                var associatedParameterCurvesCount = Integer(parameters, index++);
+                binder.BindEntity(Integer(parameters, ref index), e => boundaryItem.Entity = e);
+                boundaryItem.IsReversed = Integer(parameters, ref index) == 2;
+                var associatedParameterCurvesCount = Integer(parameters, ref index);
                 for (int j = 0; j < associatedParameterCurvesCount; j++)
                 {
-                    binder.BindEntity(Integer(parameters, index++), e => boundaryItem.AssociatedParameterCurves.Add(e));
+                    binder.BindEntity(Integer(parameters, ref index), e => boundaryItem.AssociatedParameterCurves.Add(e));
                 }
 
                 BoundaryItems.Add(boundaryItem);

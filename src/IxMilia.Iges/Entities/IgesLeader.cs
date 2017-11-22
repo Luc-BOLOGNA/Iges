@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -27,8 +28,8 @@ namespace IxMilia.Iges.Entities
         public double ArrowHeight { get; set; }
         public double ArrowWidth { get; set; }
 
-        public IgesPoint ArrowheadCoordinates { get; set; }
-        public List<IgesPoint> LineSegments { get; private set; }
+        public Point3D ArrowheadCoordinates { get; set; }
+        public List<Point3D> LineSegments { get; private set; }
 
         public IgesArrowType ArrowType
         {
@@ -36,30 +37,30 @@ namespace IxMilia.Iges.Entities
             set { FormNumber = (int)value; }
         }
 
-        public IgesLeader()
-            : base()
+        public IgesLeader(IgesFile file)
+            : base(file)
         {
             ArrowType = IgesArrowType.Wedge;
             EntityUseFlag = IgesEntityUseFlag.Annotation;
-            ArrowheadCoordinates = IgesPoint.Origin;
-            LineSegments = new List<IgesPoint>();
+            ArrowheadCoordinates = Point3D.Origin;
+            LineSegments = new List<Point3D>();
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            var segmentCount = Integer(parameters, index++);
-            ArrowHeight = Double(parameters, index++);
-            ArrowWidth = Double(parameters, index++);
-            var zDepth = Double(parameters, index++);
-            var x = Double(parameters, index++);
-            var y = Double(parameters, index++);
-            ArrowheadCoordinates = new IgesPoint(x, y, zDepth);
+            var segmentCount = Integer(parameters, ref index);
+            ArrowHeight = Double(parameters, ref index);
+            ArrowWidth = Double(parameters, ref index);
+            var zDepth = Double(parameters, ref index);
+            var x = Double(parameters, ref index);
+            var y = Double(parameters, ref index);
+            ArrowheadCoordinates = new Point3D(x, y, zDepth);
             for (int i = 0; i < segmentCount; i++)
             {
-                x = Double(parameters, index++);
-                y = Double(parameters, index++);
-                LineSegments.Add(new IgesPoint(x, y, zDepth));
+                x = Double(parameters, ref index);
+                y = Double(parameters, ref index);
+                LineSegments.Add(new Point3D(x, y, zDepth));
             }
 
             return segmentCount * 2 + 6;

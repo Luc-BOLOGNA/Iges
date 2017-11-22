@@ -18,6 +18,11 @@ namespace IxMilia.Iges.Entities
 
     public class IgesManifestSolidBRepObject : IgesEntity
     {
+        public IgesManifestSolidBRepObject(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.ManifestSolidBRepObject; } }
 
         public IgesEntity Shell { get; set; }
@@ -27,13 +32,13 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            binder.BindEntity(Integer(parameters, index++), shell => Shell = shell);
-            IsOriented = Boolean(parameters, index++);
-            var voidCount = Integer(parameters, index++);
+            binder.BindEntity(Integer(parameters, ref index), shell => Shell = shell);
+            IsOriented = Boolean(parameters, ref index);
+            var voidCount = Integer(parameters, ref index);
             for (int i = 0; i < voidCount; i++)
             {
-                var pointer = Integer(parameters, index++);
-                var orientation = Boolean(parameters, index++);
+                var pointer = Integer(parameters, ref index);
+                var orientation = Boolean(parameters, ref index);
                 var vd = new IgesManifestSolidBRepVoid(null, orientation);
                 Voids.Add(vd);
                 binder.BindEntity(pointer, v => vd.Shell = v);

@@ -6,13 +6,13 @@ namespace IxMilia.Iges.Entities
 {
     public class IgesView: IgesViewBase
     {
-        public IgesView()
-            : this(0, 0.0, null, null, null, null, null, null)
+        public IgesView(IgesFile file)
+            : this(file, 0, 0.0, null, null, null, null, null, null)
         {
         }
 
-        public IgesView(int viewNumber, double scaleFactor, IgesPlane left, IgesPlane top, IgesPlane right, IgesPlane bottom, IgesPlane back, IgesPlane front)
-            : base(viewNumber, scaleFactor)
+        public IgesView(IgesFile file, int viewNumber, double scaleFactor, IgesPlane left, IgesPlane top, IgesPlane right, IgesPlane bottom, IgesPlane back, IgesPlane front)
+            : base(file, viewNumber, scaleFactor)
         {
             this.FormNumber = 0;
             ViewVolumeLeft = left;

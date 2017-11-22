@@ -8,6 +8,8 @@ namespace IxMilia.Iges
 {
     internal class IgesDirectoryData
     {
+        public readonly IgesFile File;
+
         public IgesEntityType EntityType { get; set; }
         public int ParameterPointer { get; set; }
         public int Structure { get; set; }
@@ -73,15 +75,14 @@ namespace IxMilia.Iges
         private static string ToStringOrDefault(string value)
         {
             return string.IsNullOrWhiteSpace(value)
-                ? "        "
+                ? BlankField
                 : value.Substring(0, Math.Min(8, value.Length));
         }
 
-        public static IgesDirectoryData FromRawLines(string line1, string line2)
+        public static IgesDirectoryData FromRawLines(IgesFile file, string line1, string line2)
         {
-            var dir = new IgesDirectoryData();
-            var entityTypeNumber = int.Parse(GetField(line1, 1));
-            dir.EntityType = (IgesEntityType)entityTypeNumber;
+            var dir = new IgesDirectoryData(file);
+            dir.EntityType = (IgesEntityType)int.Parse(GetField(line1, 1));
             dir.ParameterPointer = int.Parse(GetField(line1, 2));
             dir.Structure = int.Parse(GetField(line1, 3));
             dir.LineFontPattern = int.Parse(GetField(line1, 4));
@@ -100,11 +101,17 @@ namespace IxMilia.Iges
             return dir;
         }
 
+        const int FieldSize = 8;
+
+        public IgesDirectoryData(IgesFile file)
+        {
+            File = file;
+        }
+
         private static string GetField(string str, int field, string defaultValue = "0")
         {
-            var size = 8;
-            var offset = (field - 1) * size;
-            var value = str.Substring(offset, size).Trim();
+            var offset = (field - 1) * FieldSize;
+            var value = str.Substring(offset, FieldSize).Trim();
             return string.IsNullOrEmpty(value) ? defaultValue : value;
         }
     }

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System;
 using System.Collections.Generic;
 
@@ -16,18 +17,19 @@ namespace IxMilia.Iges.Entities
 
     public class IgesPerspectiveView : IgesViewBase
     {
-        public IgesPerspectiveView()
-            : this(0, 0.0, IgesVector.Zero, IgesPoint.Origin, IgesPoint.Origin, IgesVector.Zero, 0.0, 0.0, 0.0, 0.0, 0.0, IgesDepthClipping.None, 0.0, 0.0)
+        public IgesPerspectiveView(IgesFile file)
+            : this(file, 0, 0.0, IgesVector.Zero, Point3D.Origin, Point3D.Origin, IgesVector.Zero, 0.0, 0.0, 0.0, 0.0, 0.0, IgesDepthClipping.None, 0.0, 0.0)
         {
         }
 
         public IgesPerspectiveView(
+            IgesFile file,
             int viewNumber,
             double scaleFactor,
-            IgesVector viewPlaneNormal,
-            IgesPoint referencePoint,
-            IgesPoint centerOfProjection,
-            IgesVector upVector,
+            Vector3D viewPlaneNormal,
+            Point3D referencePoint,
+            Point3D centerOfProjection,
+            Vector3D upVector,
             double viewPlaneDistance,
             double leftClippingCoordinate,
             double rightClippingCoordinate,
@@ -36,7 +38,7 @@ namespace IxMilia.Iges.Entities
             IgesDepthClipping depthClipping,
             double backClippingCoordinate,
             double frontClippingCoordinate)
-            : base(viewNumber, scaleFactor)
+            : base(file, viewNumber, scaleFactor)
         {
             this.FormNumber = 1;
             this.ViewPlaneNormal = viewPlaneNormal;
@@ -53,10 +55,10 @@ namespace IxMilia.Iges.Entities
             this.ClippingWindowFrontCoordinate = frontClippingCoordinate;
         }
 
-        public IgesVector ViewPlaneNormal { get; set; }
-        public IgesPoint ViewReferencePoint { get; set; }
-        public IgesPoint CenterOfProjection { get; set; }
-        public IgesVector ViewUpVector { get; set; }
+        public Vector3D ViewPlaneNormal { get; set; }
+        public Point3D ViewReferencePoint { get; set; }
+        public Point3D CenterOfProjection { get; set; }
+        public Vector3D ViewUpVector { get; set; }
         public double ViewPlaneDistance { get; set; }
         public double ClippingWindowLeftCoordinate { get; set; }
         public double ClippingWindowRightCoordinate { get; set; }
@@ -68,28 +70,20 @@ namespace IxMilia.Iges.Entities
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
-            var nextIndex = base.ReadParameters(parameters, binder);
-            this.ViewPlaneNormal.X = Double(parameters, nextIndex);
-            this.ViewPlaneNormal.Y = Double(parameters, nextIndex + 1);
-            this.ViewPlaneNormal.Z = Double(parameters, nextIndex + 2);
-            this.ViewReferencePoint.X = Double(parameters, nextIndex + 3);
-            this.ViewReferencePoint.Y = Double(parameters, nextIndex + 4);
-            this.ViewReferencePoint.Z = Double(parameters, nextIndex + 5);
-            this.CenterOfProjection.X = Double(parameters, nextIndex + 6);
-            this.CenterOfProjection.Y = Double(parameters, nextIndex + 7);
-            this.CenterOfProjection.Z = Double(parameters, nextIndex + 8);
-            this.ViewUpVector.X = Double(parameters, nextIndex + 9);
-            this.ViewUpVector.Y = Double(parameters, nextIndex + 10);
-            this.ViewUpVector.Z = Double(parameters, nextIndex + 11);
-            this.ViewPlaneDistance = Double(parameters, nextIndex + 12);
-            this.ClippingWindowLeftCoordinate = Double(parameters, nextIndex + 13);
-            this.ClippingWindowRightCoordinate = Double(parameters, nextIndex + 14);
-            this.ClippingWindowBottomCoordinate = Double(parameters, nextIndex + 15);
-            this.ClippingWindowTopCoordinate = Double(parameters, nextIndex + 16);
-            this.DepthClipping = (IgesDepthClipping)Integer(parameters, nextIndex + 17);
-            this.ClippingWindowBackCoordinate = Double(parameters, nextIndex + 18);
-            this.ClippingWindowFrontCoordinate = Double(parameters, nextIndex + 19);
-            return nextIndex + 20;
+            int nextIndex = base.ReadParameters(parameters, binder);
+            this.ViewPlaneNormal = IgesVector.Vector3D(parameters, ref nextIndex);
+            this.ViewReferencePoint = IgesPoint.Point3D(parameters, ref nextIndex);
+            this.CenterOfProjection = IgesPoint.Point3D(parameters, ref nextIndex);
+            this.ViewUpVector = IgesVector.Vector3D(parameters, ref nextIndex);
+            this.ViewPlaneDistance = Double(parameters, ref nextIndex);
+            this.ClippingWindowLeftCoordinate = Double(parameters, ref nextIndex);
+            this.ClippingWindowRightCoordinate = Double(parameters, ref nextIndex);
+            this.ClippingWindowBottomCoordinate = Double(parameters, ref nextIndex);
+            this.ClippingWindowTopCoordinate = Double(parameters, ref nextIndex);
+            this.DepthClipping = (IgesDepthClipping)Integer(parameters, ref nextIndex);
+            this.ClippingWindowBackCoordinate = Double(parameters, ref nextIndex);
+            this.ClippingWindowFrontCoordinate = Double(parameters, ref nextIndex);
+            return nextIndex;
         }
 
         internal override void WriteParameters(List<object> parameters, IgesWriterBinder binder)

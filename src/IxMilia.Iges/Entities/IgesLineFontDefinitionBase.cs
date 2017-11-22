@@ -6,8 +6,8 @@ namespace IxMilia.Iges.Entities
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.LineFontDefinition; } }
 
-        public IgesLineFontDefinitionBase()
-            : base()
+        public IgesLineFontDefinitionBase(IgesFile file)
+            : base(file)
         {
             this.SubordinateEntitySwitchType = IgesSubordinateEntitySwitchType.Independent;
             this.EntityUseFlag = IgesEntityUseFlag.Definition;

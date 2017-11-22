@@ -14,7 +14,8 @@ namespace IxMilia.Iges.Entities
         public List<IgesEntity> BoundaryEntities { get; private set; }
         public IgesEntity OuterBoundary { get; set; }
 
-        public IgesTrimmedParametricSurface()
+        public IgesTrimmedParametricSurface(IgesFile file)
+            : base(file)
         {
             BoundaryEntities = new List<IgesEntity>();
         }
@@ -22,13 +23,13 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            binder.BindEntity(Integer(parameters, index++), e => Surface = e);
-            IsOuterBoundaryD = !Boolean(parameters, index++);
-            var boundaryEntityCount = Integer(parameters, index++);
-            binder.BindEntity(Integer(parameters, index++), e => OuterBoundary = e);
+            binder.BindEntity(Integer(parameters, ref index), e => Surface = e);
+            IsOuterBoundaryD = !Boolean(parameters, ref index);
+            var boundaryEntityCount = Integer(parameters, ref index);
+            binder.BindEntity(Integer(parameters, ref index), e => OuterBoundary = e);
             for (int i = 0; i < boundaryEntityCount; i++)
             {
-                binder.BindEntity(Integer(parameters, index++), e => BoundaryEntities.Add(e));
+                binder.BindEntity(Integer(parameters, ref index), e => BoundaryEntities.Add(e));
             }
 
             return index;

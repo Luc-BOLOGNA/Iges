@@ -10,7 +10,8 @@ namespace IxMilia.Iges.Entities
         public IgesLeader FirstLeader { get; set; }
         public IgesLeader SecondLeader { get; set; }
 
-        protected IgesDimensionBase()
+        protected IgesDimensionBase(IgesFile file)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Annotation;
         }

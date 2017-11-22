@@ -16,8 +16,8 @@ namespace IxMilia.Iges.Entities
         // custom properties
         public List<IgesEntity> Entities { get; private set; }
 
-        public IgesSubfigureDefinition()
-            : base()
+        public IgesSubfigureDefinition(IgesFile file)
+            : base(file)
         {
             this.Depth = 0;
             this.Name = null;

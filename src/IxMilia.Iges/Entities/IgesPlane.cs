@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -21,7 +22,7 @@ namespace IxMilia.Iges.Entities
         public double PlaneCoefficientB { get; set; }
         public double PlaneCoefficientC { get; set; }
         public double PlaneCoefficientD { get; set; }
-        public IgesPoint DisplaySymbolLocation { get; set; }
+        public Point3D DisplaySymbolLocation { get; set; }
         public double DisplaySymbolSize { get; set; }
 
         public IgesEntity ClosedCurveBoundingEntity { get; set; }
@@ -39,13 +40,13 @@ namespace IxMilia.Iges.Entities
             }
         }
 
-        public IgesPlane()
-            : base()
+        public IgesPlane(IgesFile file)
+            : base(file)
         {
-            DisplaySymbolLocation = IgesPoint.Origin;
+            DisplaySymbolLocation = Point3D.Origin;
         }
 
-        public bool IsPointOnPlane(IgesPoint point)
+        public bool IsPointOnPlane(Point3D point)
         {
             return (PlaneCoefficientA * point.X) + (PlaneCoefficientB * point.Y) + (PlaneCoefficientC * point.Z) == PlaneCoefficientD;
         }
@@ -65,9 +66,7 @@ namespace IxMilia.Iges.Entities
                 binder.BindEntity(closedCurvePointer, e => ClosedCurveBoundingEntity = e);
             }
 
-            this.DisplaySymbolLocation.X = Double(parameters, 5);
-            this.DisplaySymbolLocation.Y = Double(parameters, 6);
-            this.DisplaySymbolLocation.Z = Double(parameters, 7);
+            this.DisplaySymbolLocation = IgesPoint.Point3D(parameters, 5);
             this.DisplaySymbolSize = Double(parameters, 8);
 
             return 9;

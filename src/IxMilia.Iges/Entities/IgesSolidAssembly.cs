@@ -27,7 +27,8 @@ namespace IxMilia.Iges.Entities
 
         public List<IgesSolidAndTransformationMatrix> Solids { get; }
 
-        public IgesSolidAssembly()
+        public IgesSolidAssembly(IgesFile file)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Definition;
             Solids = new List<IgesSolidAndTransformationMatrix>();
@@ -36,10 +37,10 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            var itemCount = Integer(parameters, index++);
+            var itemCount = Integer(parameters, ref index);
             for (int i = 0; i < itemCount; i++)
             {
-                var pointer = Integer(parameters, index++);
+                var pointer = Integer(parameters, ref index);
                 var item = new IgesSolidAndTransformationMatrix();
                 Solids.Add(item);
                 binder.BindEntity(pointer, solid => item.Solid = solid);
@@ -47,9 +48,9 @@ namespace IxMilia.Iges.Entities
 
             for (int i = 0; i < itemCount; i++)
             {
-                var pointer = Integer(parameters, index++);
+                var pointer = Integer(parameters, ref index);
                 var item = Solids[i];
-                binder.BindEntity(pointer, matrix => item.TransformationMatrix = matrix as IgesTransformationMatrix ?? IgesTransformationMatrix.Identity);
+                binder.BindEntity(pointer, matrix => item.TransformationMatrix = matrix as IgesTransformationMatrix ?? IgesTransformationMatrix.Identity(matrix.File));
             }
 
             return index;

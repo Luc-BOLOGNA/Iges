@@ -1,5 +1,6 @@
 // Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,7 +69,8 @@ namespace IxMilia.Iges.Entities
 
         public abstract IgesElementEdgeOrder EdgeOrder { get; }
 
-        protected IgesFiniteElement(IgesTopologyType topologyType)
+        protected IgesFiniteElement(IgesFile file, IgesTopologyType topologyType)
+            : base(file)
         {
             InternalNodes = new List<IgesNode>();
             TopologyType = topologyType;
@@ -98,11 +100,11 @@ namespace IxMilia.Iges.Entities
 
         protected abstract void AddNodes();
 
-        internal static IgesPoint GetNodeOffset(IgesFiniteElementDummy dummy, int index)
+        internal static Point3D GetNodeOffset(IgesFiniteElementDummy dummy, int index)
         {
             return dummy.InternalNodes.Count > index
                 ? dummy.InternalNodes[index].Offset
-                : IgesPoint.Origin;
+                : Point3D.Origin;
         }
     }
 }

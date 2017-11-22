@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -9,14 +10,15 @@ namespace IxMilia.Iges.Entities
         public override IgesEntityType EntityType { get { return IgesEntityType.SelectedComponent; } }
 
         public IgesBooleanTree BooleanTree { get; set; }
-        public IgesPoint SelectionPoint { get; set; }
+        public Point3D SelectionPoint { get; set; }
 
-        public IgesSelectedComponent()
-            : this(null, IgesPoint.Origin)
+        public IgesSelectedComponent(IgesFile file)
+            : this(file, null, Point3D.Origin)
         {
         }
 
-        public IgesSelectedComponent(IgesBooleanTree booleanTree, IgesPoint selectionPoint)
+        public IgesSelectedComponent(IgesFile file, IgesBooleanTree booleanTree, Point3D selectionPoint)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Other;
             BooleanTree = booleanTree;
@@ -26,9 +28,7 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             binder.BindEntity(Integer(parameters, 0), e => BooleanTree = e as IgesBooleanTree);
-            SelectionPoint.X = Double(parameters, 1);
-            SelectionPoint.Y = Double(parameters, 2);
-            SelectionPoint.Z = Double(parameters, 3);
+            SelectionPoint = IgesPoint.Point3D(parameters, 1);
             return 4;
         }
 
@@ -40,9 +40,9 @@ namespace IxMilia.Iges.Entities
         internal override void WriteParameters(List<object> parameters, IgesWriterBinder binder)
         {
             parameters.Add(binder.GetEntityId(BooleanTree));
-            parameters.Add(SelectionPoint?.X ?? 0.0);
-            parameters.Add(SelectionPoint?.Y ?? 0.0);
-            parameters.Add(SelectionPoint?.Z ?? 0.0);
+            parameters.Add(SelectionPoint.X);
+            parameters.Add(SelectionPoint.Y);
+            parameters.Add(SelectionPoint.Z);
         }
     }
 }

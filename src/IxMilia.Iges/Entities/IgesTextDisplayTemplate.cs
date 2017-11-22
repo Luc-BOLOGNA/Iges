@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -16,7 +17,7 @@ namespace IxMilia.Iges.Entities
         public double RotationAngle { get; set; }
         public IgesTextMirroringAxis MirroringAxis { get; set; }
         public IgesTextRotationType RotationType { get; set; }
-        public IgesVector LocationOrOffset { get; set; }
+        public Vector3D LocationOrOffset { get; set; }
 
         public bool IsAbsoluteDisplayTemplate
         {
@@ -30,8 +31,8 @@ namespace IxMilia.Iges.Entities
             set { IsAbsoluteDisplayTemplate = !value; }
         }
 
-        public IgesTextDisplayTemplate()
-            : base()
+        public IgesTextDisplayTemplate(IgesFile file)
+            : base(file)
         {
             SubordinateEntitySwitchType = IgesSubordinateEntitySwitchType.Independent;
             EntityUseFlag = IgesEntityUseFlag.Definition;
@@ -59,9 +60,7 @@ namespace IxMilia.Iges.Entities
             this.RotationAngle = Double(parameters, 4);
             this.MirroringAxis = (IgesTextMirroringAxis)Integer(parameters, 5);
             this.RotationType = (IgesTextRotationType)Integer(parameters, 6);
-            this.LocationOrOffset.X = Double(parameters, 7);
-            this.LocationOrOffset.Y = Double(parameters, 8);
-            this.LocationOrOffset.Z = Double(parameters, 9);
+            this.LocationOrOffset = IgesVector.Vector3D(parameters, 7);
             return 10;
         }
 

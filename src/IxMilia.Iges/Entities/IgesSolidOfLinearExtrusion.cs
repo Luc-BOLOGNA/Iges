@@ -1,24 +1,28 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
 {
     public class IgesSolidOfLinearExtrusion : IgesEntity
     {
+        public IgesSolidOfLinearExtrusion(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.SolidOfLinearExtrusion; } }
 
         public IgesEntity Curve { get; set; }
         public double ExtrusionLength { get; set; }
-        public IgesVector ExtrusionDirection { get; set; } = IgesVector.ZAxis;
+        public Vector3D ExtrusionDirection { get; set; } = IgesVector.ZAxis;
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             binder.BindEntity(Integer(parameters, 0), e => Curve = e);
             ExtrusionLength = Double(parameters, 1);
-            ExtrusionDirection.X = Double(parameters, 2);
-            ExtrusionDirection.Y = Double(parameters, 3);
-            ExtrusionDirection.Z = Double(parameters, 4);
+            ExtrusionDirection = IgesVector.Vector3D(parameters, 2);
             return 5;
         }
 
@@ -31,9 +35,9 @@ namespace IxMilia.Iges.Entities
         {
             parameters.Add(binder.GetEntityId(Curve));
             parameters.Add(ExtrusionLength);
-            parameters.Add(ExtrusionDirection?.X ?? 0.0);
-            parameters.Add(ExtrusionDirection?.Y ?? 0.0);
-            parameters.Add(ExtrusionDirection?.Z ?? 1.0);
+            parameters.Add(ExtrusionDirection.X);
+            parameters.Add(ExtrusionDirection.Y);
+            parameters.Add(ExtrusionDirection.Z);
         }
     }
 }

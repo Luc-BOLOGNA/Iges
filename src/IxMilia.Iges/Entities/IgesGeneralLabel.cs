@@ -12,7 +12,8 @@ namespace IxMilia.Iges.Entities
         public IgesGeneralNote GeneralNote { get; set; }
         public IList<IgesLeader> Leaders { get; private set; }
 
-        public IgesGeneralLabel()
+        public IgesGeneralLabel(IgesFile file)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Annotation;
             Leaders = new List<IgesLeader>();
@@ -21,14 +22,14 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            binder.BindEntity(Integer(parameters, index++), note => GeneralNote = note as IgesGeneralNote);
+            binder.BindEntity(Integer(parameters, ref index), note => GeneralNote = note as IgesGeneralNote);
 
-            var leaderCount = Integer(parameters, index++);
+            var leaderCount = Integer(parameters, ref index);
             Leaders = new IgesLeader[leaderCount].ToList();
             for (int i = 0; i < leaderCount; i++)
             {
                 var idx = i;
-                binder.BindEntity(Integer(parameters, index++), leader => Leaders[idx] = leader as IgesLeader);
+                binder.BindEntity(Integer(parameters, ref index), leader => Leaders[idx] = leader as IgesLeader);
             }
 
             return index;

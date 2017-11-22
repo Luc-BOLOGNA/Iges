@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -11,13 +12,20 @@ namespace IxMilia.Iges.Entities
         Unbounded = 2
     }
 
-    public class IgesLine : IgesEntity
+    public class IgesLine2D : IgesEntity, IIgesDrawable2D
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.Line; } }
 
         // properties
-        public IgesPoint P1 { get; set; }
-        public IgesPoint P2 { get; set; }
+        public Line2D Line { get; set; }
+        public Point2D StartPoint => Line.StartPoint;
+        public Point2D EndPoint => Line.EndPoint;
+
+        public IIgesDrawable2D Reverse()
+        {
+            Line = new Line2D(Line.EndPoint, Line.StartPoint);
+            return this;
+        }
 
         // custom properties
         public IgesLineBounding Bounding
@@ -32,37 +40,26 @@ namespace IxMilia.Iges.Entities
             }
         }
 
-        public IgesLine()
-            : this(IgesPoint.Origin, IgesPoint.Origin)
-        {
-        }
+        public IgesLine2D(IgesFile file)
+            : base(file) => this.Line = new Line2D();
 
-        public IgesLine(IgesPoint p1, IgesPoint p2)
-            : base()
-        {
-            this.P1 = p1;
-            this.P2 = p2;
-        }
+        public IgesLine2D(IgesFile file, Point2D start, Point2D end)
+            : base(file) => this.Line = new Line2D(start, end);
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
-            this.P1.X = Double(parameters, 0);
-            this.P1.Y = Double(parameters, 1);
-            this.P1.Z = Double(parameters, 2);
-            this.P2.X = Double(parameters, 3);
-            this.P2.Y = Double(parameters, 4);
-            this.P2.Z = Double(parameters, 5);
+            this.Line = new Line2D(
+                IgesPoint.Point2D(parameters, 0),
+                IgesPoint.Point2D(parameters, 3));
             return 6;
         }
 
         internal override void WriteParameters(List<object> parameters, IgesWriterBinder binder)
         {
-            parameters.Add(this.P1.X);
-            parameters.Add(this.P1.Y);
-            parameters.Add(this.P1.Z);
-            parameters.Add(this.P2.X);
-            parameters.Add(this.P2.Y);
-            parameters.Add(this.P2.Z);
+            this.StartPoint.WriteParameters(parameters, binder);
+            this.EndPoint.WriteParameters(parameters, binder);
         }
+
+        public override string ToString() => "Star: " + StartPoint.ToString() + ", End: " + EndPoint.ToString();
     }
 }

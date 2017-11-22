@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -8,25 +9,25 @@ namespace IxMilia.Iges.Entities
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.RadiusDimension; } }
 
-        public IgesPoint ArcCenter { get; set; }
+        public Point2D ArcCenter { get; set; }
 
         public bool HasTwoLeaders { get { return SecondLeader != null; } }
 
-        public IgesRadiusDimension()
+        public IgesRadiusDimension(IgesFile file)
+            : base(file)
         {
-            ArcCenter = IgesPoint.Origin;
+            ArcCenter = Point2D.Origin;
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            binder.BindEntity(Integer(parameters, index++), generalNote => GeneralNote = generalNote as IgesGeneralNote);
-            binder.BindEntity(Integer(parameters, index++), leader => FirstLeader = leader as IgesLeader);
-            ArcCenter.X = Double(parameters, index++);
-            ArcCenter.Y = Double(parameters, index++);
+            binder.BindEntity(Integer(parameters, ref index), generalNote => GeneralNote = generalNote as IgesGeneralNote);
+            binder.BindEntity(Integer(parameters, ref index), leader => FirstLeader = leader as IgesLeader);
+            ArcCenter = IgesPoint.Point2D(parameters, ref index);
             if (FormNumber == 1)
             {
-                binder.BindEntity(Integer(parameters, index++), leader => SecondLeader = leader as IgesLeader);
+                binder.BindEntity(Integer(parameters, ref index), leader => SecondLeader = leader as IgesLeader);
             }
 
             return index;
@@ -41,8 +42,8 @@ namespace IxMilia.Iges.Entities
         {
             parameters.Add(binder.GetEntityId(GeneralNote));
             parameters.Add(binder.GetEntityId(FirstLeader));
-            parameters.Add(ArcCenter?.X ?? 0.0);
-            parameters.Add(ArcCenter?.Y ?? 0.0);
+            parameters.Add(ArcCenter.X);
+            parameters.Add(ArcCenter.Y);
             if (HasTwoLeaders)
             {
                 parameters.Add(binder.GetEntityId(SecondLeader));

@@ -8,8 +8,8 @@ namespace IxMilia.Iges.Entities
     {
         public HashSet<int> DefinedLevels { get; private set; }
 
-        public IgesDefinitionLevelsProperty()
-            : base()
+        public IgesDefinitionLevelsProperty(IgesFile file)
+            : base(file)
         {
             FormNumber = 1;
             DefinedLevels = new HashSet<int>();

@@ -1,30 +1,32 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
 {
     public class IgesRightCircularConeFrustrum : IgesEntity
     {
+        public IgesRightCircularConeFrustrum(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.RightCircularConeFrustrum; } }
 
         public double Height { get; set; }
         public double LargeFaceRadius { get; set; }
         public double SmallFaceRadius { get; set; }
-        public IgesPoint LargeFaceCenter { get; set; } = IgesPoint.Origin;
-        public IgesVector AxisDirection { get; set; } = IgesVector.ZAxis;
+        public Point3D LargeFaceCenter { get; set; } = Point3D.Origin;
+        public Vector3D AxisDirection { get; set; } = IgesVector.ZAxis;
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             Height = Double(parameters, 0);
             LargeFaceRadius = Double(parameters, 1);
             SmallFaceRadius = Double(parameters, 2);
-            LargeFaceCenter.X = Double(parameters, 3);
-            LargeFaceCenter.Y = Double(parameters, 4);
-            LargeFaceCenter.Z = Double(parameters, 5);
-            AxisDirection.X = Double(parameters, 6);
-            AxisDirection.Y = Double(parameters, 7);
-            AxisDirection.Z = Double(parameters, 8);
+            LargeFaceCenter = IgesPoint.Point3D(parameters, 3);
+            AxisDirection = IgesVector.Vector3D(parameters, 6);
             return 9;
         }
 
@@ -33,12 +35,12 @@ namespace IxMilia.Iges.Entities
             parameters.Add(Height);
             parameters.Add(LargeFaceRadius);
             parameters.Add(SmallFaceRadius);
-            parameters.Add(LargeFaceCenter?.X ?? 0.0);
-            parameters.Add(LargeFaceCenter?.Y ?? 0.0);
-            parameters.Add(LargeFaceCenter?.Z ?? 0.0);
-            parameters.Add(AxisDirection?.X ?? 0.0);
-            parameters.Add(AxisDirection?.Y ?? 0.0);
-            parameters.Add(AxisDirection?.Z ?? 1.0);
+            parameters.Add(LargeFaceCenter.X);
+            parameters.Add(LargeFaceCenter.Y);
+            parameters.Add(LargeFaceCenter.Z);
+            parameters.Add(AxisDirection.X);
+            parameters.Add(AxisDirection.Y);
+            parameters.Add(AxisDirection.Z);
         }
     }
 }

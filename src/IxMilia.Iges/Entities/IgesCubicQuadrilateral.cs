@@ -1,38 +1,41 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
+
 namespace IxMilia.Iges.Entities
 {
     public class IgesCubicQuadrilateral : IgesFiniteElement
     {
         public override IgesElementEdgeOrder EdgeOrder { get { return IgesElementEdgeOrder.Cubic; } }
 
-        public IgesPoint P1 { get; set; }
-        public IgesPoint P1P2Control1 { get; set; }
-        public IgesPoint P1P2Control2 { get; set; }
-        public IgesPoint P2 { get; set; }
-        public IgesPoint P2P3Control1 { get; set; }
-        public IgesPoint P2P3Control2 { get; set; }
-        public IgesPoint P3 { get; set; }
-        public IgesPoint P3P4Control1 { get; set; }
-        public IgesPoint P3P4Control2 { get; set; }
-        public IgesPoint P4 { get; set; }
-        public IgesPoint P4P1Control1 { get; set; }
-        public IgesPoint P4P1Control2 { get; set; }
+        public Point3D P1 { get; set; }
+        public Point3D P1P2Control1 { get; set; }
+        public Point3D P1P2Control2 { get; set; }
+        public Point3D P2 { get; set; }
+        public Point3D P2P3Control1 { get; set; }
+        public Point3D P2P3Control2 { get; set; }
+        public Point3D P3 { get; set; }
+        public Point3D P3P4Control1 { get; set; }
+        public Point3D P3P4Control2 { get; set; }
+        public Point3D P4 { get; set; }
+        public Point3D P4P1Control1 { get; set; }
+        public Point3D P4P1Control2 { get; set; }
 
         public IgesCubicQuadrilateral(
-            IgesPoint p1,
-            IgesPoint p1P2Control1,
-            IgesPoint p1P2Control2,
-            IgesPoint p2,
-            IgesPoint p2P3Control1,
-            IgesPoint p2P3Control2,
-            IgesPoint p3,
-            IgesPoint p3P4Control1,
-            IgesPoint p3P4Control2,
-            IgesPoint p4,
-            IgesPoint p4P1Control1,
-            IgesPoint p4P1Control2)
-            : base(IgesTopologyType.CubicQuadrilateral)
+            IgesFile file,
+            Point3D p1,
+            Point3D p1P2Control1,
+            Point3D p1P2Control2,
+            Point3D p2,
+            Point3D p2P3Control1,
+            Point3D p2P3Control2,
+            Point3D p3,
+            Point3D p3P4Control1,
+            Point3D p3P4Control2,
+            Point3D p4,
+            Point3D p4P1Control1,
+            Point3D p4P1Control2)
+            : base(file, IgesTopologyType.CubicQuadrilateral)
         {
             P1 = p1;
             P1P2Control1 = p1P2Control1;
@@ -50,23 +53,24 @@ namespace IxMilia.Iges.Entities
 
         protected override void AddNodes()
         {
-            InternalNodes.Add(new IgesNode(P1));
-            InternalNodes.Add(new IgesNode(P1P2Control1));
-            InternalNodes.Add(new IgesNode(P1P2Control2));
-            InternalNodes.Add(new IgesNode(P2));
-            InternalNodes.Add(new IgesNode(P2P3Control1));
-            InternalNodes.Add(new IgesNode(P2P3Control2));
-            InternalNodes.Add(new IgesNode(P3));
-            InternalNodes.Add(new IgesNode(P3P4Control1));
-            InternalNodes.Add(new IgesNode(P3P4Control2));
-            InternalNodes.Add(new IgesNode(P4));
-            InternalNodes.Add(new IgesNode(P4P1Control1));
-            InternalNodes.Add(new IgesNode(P4P1Control2));
+            InternalNodes.Add(new IgesNode(File, P1));
+            InternalNodes.Add(new IgesNode(File, P1P2Control1));
+            InternalNodes.Add(new IgesNode(File, P1P2Control2));
+            InternalNodes.Add(new IgesNode(File, P2));
+            InternalNodes.Add(new IgesNode(File, P2P3Control1));
+            InternalNodes.Add(new IgesNode(File, P2P3Control2));
+            InternalNodes.Add(new IgesNode(File, P3));
+            InternalNodes.Add(new IgesNode(File, P3P4Control1));
+            InternalNodes.Add(new IgesNode(File, P3P4Control2));
+            InternalNodes.Add(new IgesNode(File, P4));
+            InternalNodes.Add(new IgesNode(File, P4P1Control1));
+            InternalNodes.Add(new IgesNode(File, P4P1Control2));
         }
 
         internal static IgesCubicQuadrilateral FromDummy(IgesFiniteElementDummy dummy)
         {
             return new IgesCubicQuadrilateral(
+                dummy.File,
                 GetNodeOffset(dummy, 0),
                 GetNodeOffset(dummy, 1),
                 GetNodeOffset(dummy, 2),

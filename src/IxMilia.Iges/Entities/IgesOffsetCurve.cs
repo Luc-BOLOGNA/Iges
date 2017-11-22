@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -31,12 +32,12 @@ namespace IxMilia.Iges.Entities
         public double FirstOffsetDistanceValue { get; set; }
         public double SecondOffsetDistance { get; set; }
         public double SecondOffsetDistanceValue { get; set; }
-        public IgesVector EntityNormal { get; set; }
+        public Vector3D EntityNormal { get; set; }
         public double StartingParameterValue { get; set; }
         public double EndingParameterValue { get; set; }
 
-        public IgesOffsetCurve()
-            : base()
+        public IgesOffsetCurve(IgesFile file)
+            : base(file)
         {
             EntityNormal = IgesVector.ZAxis;
         }
@@ -52,7 +53,7 @@ namespace IxMilia.Iges.Entities
             FirstOffsetDistanceValue = Double(parameters, 6);
             SecondOffsetDistance = Double(parameters, 7);
             SecondOffsetDistanceValue = Double(parameters, 8);
-            EntityNormal = new IgesVector(Double(parameters, 9), Double(parameters, 10), Double(parameters, 11));
+            EntityNormal = new Vector3D(Double(parameters, 9), Double(parameters, 10), Double(parameters, 11));
             StartingParameterValue = Double(parameters, 12);
             EndingParameterValue = Double(parameters, 13);
             return 14;
@@ -75,9 +76,9 @@ namespace IxMilia.Iges.Entities
             parameters.Add(FirstOffsetDistanceValue);
             parameters.Add(SecondOffsetDistance);
             parameters.Add(SecondOffsetDistanceValue);
-            parameters.Add(EntityNormal?.X ?? 0.0);
-            parameters.Add(EntityNormal?.Y ?? 0.0);
-            parameters.Add(EntityNormal?.Z ?? 0.0);
+            parameters.Add(EntityNormal.X);
+            parameters.Add(EntityNormal.Y);
+            parameters.Add(EntityNormal.Z);
             parameters.Add(StartingParameterValue);
             parameters.Add(EndingParameterValue);
         }

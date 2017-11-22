@@ -22,6 +22,11 @@ namespace IxMilia.Iges.Entities
 
     public class IgesCurveOnAParametricSurface : IgesEntity
     {
+        public IgesCurveOnAParametricSurface(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.CurveOnAParametricSurface; } }
 
         public IgesCurveCreationType CurveCreationType { get; set; }

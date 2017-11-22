@@ -6,241 +6,242 @@ namespace IxMilia.Iges.Entities
 {
     public abstract partial class IgesEntity
     {
-        internal static IgesEntity FromData(IgesDirectoryData directoryData, List<string> parameters, IgesReaderBinder binder)
+        public readonly IgesFile File;
+        internal static IgesEntity FromData(IgesDirectoryData directoryData, List<string> parameters, IgesReaderBinder binder, IgesFile file)
         {
             IgesEntity entity = null;
             switch (directoryData.EntityType)
             {
                 case IgesEntityType.AngularDimension:
-                    entity = new IgesAngularDimension();
+                    entity = new IgesAngularDimension(file);
                     break;
                 case IgesEntityType.AssociativityInstance:
                     switch (directoryData.FormNumber)
                     {
                         case 5:
-                            entity = new IgesLabelDisplayAssociativity();
+                            entity = new IgesLabelDisplayAssociativity(file);
                             break;
                     }
                     break;
                 case IgesEntityType.Block:
-                    entity = new IgesBlock();
+                    entity = new IgesBlock(file);
                     break;
                 case IgesEntityType.BooleanTree:
-                    entity = new IgesBooleanTree();
+                    entity = new IgesBooleanTree(file);
                     break;
                 case IgesEntityType.Boundary:
-                    entity = new IgesBoundary();
+                    entity = new IgesBoundary(file);
                     break;
                 case IgesEntityType.BoundedSurface:
-                    entity = new IgesBoundedSurface();
+                    entity = new IgesBoundedSurface(file);
                     break;
                 case IgesEntityType.CircularArc:
-                    entity = new IgesCircularArc();
+                    entity = new IgesCircularArc(file);
                     break;
                 case IgesEntityType.ColorDefinition:
-                    entity = new IgesColorDefinition();
+                    entity = new IgesColorDefinition(file);
                     break;
                 case IgesEntityType.CompositeCurve:
-                    entity = new IgesCompositeCurve();
+                    entity = new IgesCompositeCurve(file);
                     break;
                 case IgesEntityType.ConicArc:
-                    entity = new IgesConicArc();
+                    entity = new IgesConicArc(file);
                     break;
                 case IgesEntityType.ConnectPoint:
-                    entity = new IgesConnectPoint();
+                    entity = new IgesConnectPoint(file);
                     break;
                 case IgesEntityType.CopiousData:
-                    entity = new IgesCopiousData();
+                    entity = new IgesCopiousData(file);
                     break;
                 case IgesEntityType.CurveDimension:
-                    entity = new IgesCurveDimension();
+                    entity = new IgesCurveDimension(file);
                     break;
                 case IgesEntityType.CurveOnAParametricSurface:
-                    entity = new IgesCurveOnAParametricSurface();
+                    entity = new IgesCurveOnAParametricSurface(file);
                     break;
                 case IgesEntityType.DiameterDimension:
-                    entity = new IgesDiameterDimension();
+                    entity = new IgesDiameterDimension(file);
                     break;
                 case IgesEntityType.Direction:
-                    entity = new IgesDirection();
+                    entity = new IgesDirection(file);
                     break;
                 case IgesEntityType.ElementResults:
-                    entity = new IgesElementResults();
+                    entity = new IgesElementResults(file);
                     break;
                 case IgesEntityType.Ellipsoid:
-                    entity = new IgesEllipsoid();
+                    entity = new IgesEllipsoid(file);
                     break;
                 case IgesEntityType.FlagNote:
-                    entity = new IgesFlagNote();
+                    entity = new IgesFlagNote(file);
                     break;
                 case IgesEntityType.Flash:
-                    entity = new IgesFlash();
+                    entity = new IgesFlash(file);
                     break;
                 case IgesEntityType.FiniteElement:
-                    entity = new IgesFiniteElementDummy();
+                    entity = new IgesFiniteElementDummy(file);
                     break;
                 case IgesEntityType.GeneralLabel:
-                    entity = new IgesGeneralLabel();
+                    entity = new IgesGeneralLabel(file);
                     break;
                 case IgesEntityType.GeneralNote:
-                    entity = new IgesGeneralNote();
+                    entity = new IgesGeneralNote(file);
                     break;
                 case IgesEntityType.GeneralSymbol:
-                    entity = new IgesGeneralSymbol();
+                    entity = new IgesGeneralSymbol(file);
                     break;
                 case IgesEntityType.Leader:
-                    entity = new IgesLeader();
+                    entity = new IgesLeader(file);
                     break;
                 case IgesEntityType.Line:
-                    entity = new IgesLine();
+                    entity = new IgesLine2D(file);
                     break;
                 case IgesEntityType.LinearDimension:
-                    entity = new IgesLinearDimension();
+                    entity = new IgesLinearDimension(file);
                     break;
                 case IgesEntityType.LineFontDefinition:
                     switch (directoryData.FormNumber)
                     {
                         case 1:
-                            entity = new IgesTemplateLineFontDefinition();
+                            entity = new IgesTemplateLineFontDefinition(file);
                             break;
                         case 2:
-                            entity = new IgesPatternLineFontDefinition();
+                            entity = new IgesPatternLineFontDefinition(file);
                             break;
                     }
                     break;
                 case IgesEntityType.ManifestSolidBRepObject:
-                    entity = new IgesManifestSolidBRepObject();
+                    entity = new IgesManifestSolidBRepObject(file);
                     break;
                 case IgesEntityType.NewGeneralNote:
-                    entity = new IgesNewGeneralNote();
+                    entity = new IgesNewGeneralNote(file);
                     break;
                 case IgesEntityType.NodalDisplacementAndRotation:
-                    entity = new IgesNodalDisplacementAndRotation();
+                    entity = new IgesNodalDisplacementAndRotation(file);
                     break;
                 case IgesEntityType.NodalResults:
-                    entity = new IgesNodalResults();
+                    entity = new IgesNodalResults(file);
                     break;
                 case IgesEntityType.Node:
-                    entity = new IgesNode();
+                    entity = new IgesNode(file);
                     break;
                 case IgesEntityType.Null:
-                    entity = new IgesNull();
+                    entity = new IgesNull(file);
                     break;
                 case IgesEntityType.OffsetCurve:
-                    entity = new IgesOffsetCurve();
+                    entity = new IgesOffsetCurve(file);
                     break;
                 case IgesEntityType.OffsetSurface:
-                    entity = new IgesOffsetSurface();
+                    entity = new IgesOffsetSurface(file);
                     break;
                 case IgesEntityType.OrdinateDimension:
-                    entity = new IgesOrdinateDimension();
+                    entity = new IgesOrdinateDimension(file);
                     break;
                 case IgesEntityType.ParametricSplineCurve:
-                    entity = new IgesParametricSplineCurve();
+                    entity = new IgesParametricSplineCurve(file);
                     break;
                 case IgesEntityType.ParametricSplineSurface:
-                    entity = new IgesParametricSplineSurface();
+                    entity = new IgesParametricSplineSurface(file);
                     break;
                 case IgesEntityType.Plane:
-                    entity = new IgesPlane();
+                    entity = new IgesPlane(file);
                     break;
                 case IgesEntityType.PlaneSurface:
-                    entity = new IgesPlaneSurface();
+                    entity = new IgesPlaneSurface(file);
                     break;
                 case IgesEntityType.Point:
-                    entity = new IgesLocation();
+                    entity = new IgesLocation(file);
                     break;
                 case IgesEntityType.PointDimension:
-                    entity = new IgesPointDimension();
+                    entity = new IgesPointDimension(file);
                     break;
                 case IgesEntityType.Property:
                     switch (directoryData.FormNumber)
                     {
                         case 1:
-                            entity = new IgesDefinitionLevelsProperty();
+                            entity = new IgesDefinitionLevelsProperty(file);
                             break;
                     }
                     break;
                 case IgesEntityType.RadiusDimension:
-                    entity = new IgesRadiusDimension();
+                    entity = new IgesRadiusDimension(file);
                     break;
                 case IgesEntityType.RationalBSplineCurve:
-                    entity = new IgesRationalBSplineCurve();
+                    entity = new IgesRationalBSplineCurve(file);
                     break;
                 case IgesEntityType.RationalBSplineSurface:
-                    entity = new IgesRationalBSplineSurface();
+                    entity = new IgesRationalBSplineSurface(file);
                     break;
                 case IgesEntityType.RightAngularWedge:
-                    entity = new IgesRightAngularWedge();
+                    entity = new IgesRightAngularWedge(file);
                     break;
                 case IgesEntityType.RightCircularConeFrustrum:
-                    entity = new IgesRightCircularConeFrustrum();
+                    entity = new IgesRightCircularConeFrustrum(file);
                     break;
                 case IgesEntityType.RightCircularConicalSurface:
-                    entity = new IgesRightCircularConicalSurface();
+                    entity = new IgesRightCircularConicalSurface(file);
                     break;
                 case IgesEntityType.RightCircularCylinder:
-                    entity = new IgesRightCircularCylinder();
+                    entity = new IgesRightCircularCylinder(file);
                     break;
                 case IgesEntityType.RightCircularCylindricalSurface:
-                    entity = new IgesRightCircularCylindricalSurface();
+                    entity = new IgesRightCircularCylindricalSurface(file);
                     break;
                 case IgesEntityType.RuledSurface:
-                    entity = new IgesRuledSurface();
+                    entity = new IgesRuledSurface(file);
                     break;
                 case IgesEntityType.SelectedComponent:
-                    entity = new IgesSelectedComponent();
+                    entity = new IgesSelectedComponent(file);
                     break;
                 case IgesEntityType.SolidAssembly:
-                    entity = new IgesSolidAssembly();
+                    entity = new IgesSolidAssembly(file);
                     break;
                 case IgesEntityType.SolidOfLinearExtrusion:
-                    entity = new IgesSolidOfLinearExtrusion();
+                    entity = new IgesSolidOfLinearExtrusion(file);
                     break;
                 case IgesEntityType.SolidOfRevolution:
-                    entity = new IgesSolidOfRevolution();
+                    entity = new IgesSolidOfRevolution(file);
                     break;
                 case IgesEntityType.Sphere:
-                    entity = new IgesSphere();
+                    entity = new IgesSphere(file);
                     break;
                 case IgesEntityType.SphericalSurface:
-                    entity = new IgesSphericalSurface();
+                    entity = new IgesSphericalSurface(file);
                     break;
                 case IgesEntityType.SubfigureDefinition:
-                    entity = new IgesSubfigureDefinition();
+                    entity = new IgesSubfigureDefinition(file);
                     break;
                 case IgesEntityType.SurfaceOfRevolution:
-                    entity = new IgesSurfaceOfRevolution();
+                    entity = new IgesSurfaceOfRevolution(file);
                     break;
                 case IgesEntityType.TabulatedCylinder:
-                    entity = new IgesTabulatedCylinder();
+                    entity = new IgesTabulatedCylinder(file);
                     break;
                 case IgesEntityType.TextDisplayTemplate:
-                    entity = new IgesTextDisplayTemplate();
+                    entity = new IgesTextDisplayTemplate(file);
                     break;
                 case IgesEntityType.TextFontDefinition:
-                    entity = new IgesTextFontDefinition();
+                    entity = new IgesTextFontDefinition(file);
                     break;
                 case IgesEntityType.ToroidalSurface:
-                    entity = new IgesToroidalSurface();
+                    entity = new IgesToroidalSurface(file);
                     break;
                 case IgesEntityType.Torus:
-                    entity = new IgesTorus();
+                    entity = new IgesTorus(file);
                     break;
                 case IgesEntityType.TransformationMatrix:
-                    entity = new IgesTransformationMatrix();
+                    entity = new IgesTransformationMatrix(file);
                     break;
                 case IgesEntityType.TrimmedParametricSurface:
-                    entity = new IgesTrimmedParametricSurface();
+                    entity = new IgesTrimmedParametricSurface(file);
                     break;
                 case IgesEntityType.View:
                     switch (directoryData.FormNumber)
                     {
                         case 0:
-                            entity = new IgesView();
+                            entity = new IgesView(file);
                             break;
                         case 1:
-                            entity = new IgesPerspectiveView();
+                            entity = new IgesPerspectiveView(file);
                             break;
                     }
                     break;

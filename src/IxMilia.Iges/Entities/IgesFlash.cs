@@ -48,8 +48,8 @@ namespace IxMilia.Iges.Entities
             }
         }
 
-        public IgesFlash()
-            : base()
+        public IgesFlash(IgesFile file)
+            : base(file)
         {
             Hierarchy = IgesHierarchy.GlobalTopDown;
         }

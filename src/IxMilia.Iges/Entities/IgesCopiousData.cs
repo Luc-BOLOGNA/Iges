@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,8 +47,8 @@ namespace IxMilia.Iges.Entities
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.CopiousData; } }
 
-        public List<IgesPoint> DataPoints { get; private set; }
-        public List<IgesVector> DataVectors { get; private set; }
+        public List<Point3D> DataPoints { get; private set; }
+        public List<Vector3D> DataVectors { get; private set; }
 
         private IgesCopiousDataType _dataType;
         private IgesCopiousDataPointFormat _pointFormat;
@@ -94,52 +95,52 @@ namespace IxMilia.Iges.Entities
             }
         }
 
-        public IgesCopiousData()
-            : base()
+        public IgesCopiousData(IgesFile file)
+            : base(file)
         {
-            DataPoints = new List<IgesPoint>();
-            DataVectors = new List<IgesVector>();
+            DataPoints = new List<Point3D>();
+            DataVectors = new List<Vector3D>();
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            _pointFormat = (IgesCopiousDataPointFormat)Integer(parameters, index++);
-            var tupleCount = Integer(parameters, index++);
+            _pointFormat = (IgesCopiousDataPointFormat)Integer(parameters, ref index);
+            var tupleCount = Integer(parameters, ref index);
             double x, y, z, i, j, k;
             switch (_pointFormat)
             {
                 case IgesCopiousDataPointFormat.CommonZ:
-                    z = Double(parameters, index++);
+                    z = Double(parameters, ref index);
                     for (int n = 0; n < tupleCount; n++)
                     {
-                        x = Double(parameters, index++);
-                        y = Double(parameters, index++);
-                        DataPoints.Add(new IgesPoint(x, y, z));
+                        x = Double(parameters, ref index);
+                        y = Double(parameters, ref index);
+                        DataPoints.Add(new Point3D(x, y, z));
                     }
 
                     break;
                 case IgesCopiousDataPointFormat.Coordinates:
                     for (int n = 0; n < tupleCount; n++)
                     {
-                        x = Double(parameters, index++);
-                        y = Double(parameters, index++);
-                        z = Double(parameters, index++);
-                        DataPoints.Add(new IgesPoint(x, y, z));
+                        x = Double(parameters, ref index);
+                        y = Double(parameters, ref index);
+                        z = Double(parameters, ref index);
+                        DataPoints.Add(new Point3D(x, y, z));
                     }
 
                     break;
                 case IgesCopiousDataPointFormat.CoordinatesAndVectors:
                     for (int n = 0; n < tupleCount; n++)
                     {
-                        x = Double(parameters, index++);
-                        y = Double(parameters, index++);
-                        z = Double(parameters, index++);
-                        i = Double(parameters, index++);
-                        j = Double(parameters, index++);
-                        k = Double(parameters, index++);
-                        DataPoints.Add(new IgesPoint(x, y, z));
-                        DataVectors.Add(new IgesVector(i, j, k));
+                        x = Double(parameters, ref index);
+                        y = Double(parameters, ref index);
+                        z = Double(parameters, ref index);
+                        i = Double(parameters, ref index);
+                        j = Double(parameters, ref index);
+                        k = Double(parameters, ref index);
+                        DataPoints.Add(new Point3D(x, y, z));
+                        DataVectors.Add(new Vector3D(i, j, k));
                     }
 
                     break;

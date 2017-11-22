@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,14 +54,14 @@ namespace IxMilia.Iges.Entities
         internal static new IgesNewTextString ReadParameters(List<string> parameters, IgesReaderBinder binder, ref int index)
         {
             var str = new IgesNewTextString();
-            str.CharacterDisplay = (IgesCharacterDisplay)IgesParameterReader.Integer(parameters, index++);
-            str.CharacterWidth = IgesParameterReader.Double(parameters, index++);
-            str.CharacterHeight = IgesParameterReader.Double(parameters, index++);
-            str.InterCharacterSpacing = IgesParameterReader.Double(parameters, index++);
-            str.InterLineSpacing = IgesParameterReader.Double(parameters, index++);
-            str.FontStyle = (IgesFontStyle)IgesParameterReader.Integer(parameters, index++);
-            str.CharacterAngle = IgesParameterReader.Double(parameters, index++);
-            str.ControlCode = IgesParameterReader.String(parameters, index++);
+            str.CharacterDisplay = (IgesCharacterDisplay)IgesParameterReader.Integer(parameters, ref index);
+            str.CharacterWidth = IgesParameterReader.Double(parameters, ref index);
+            str.CharacterHeight = IgesParameterReader.Double(parameters, ref index);
+            str.InterCharacterSpacing = IgesParameterReader.Double(parameters, ref index);
+            str.InterLineSpacing = IgesParameterReader.Double(parameters, ref index);
+            str.FontStyle = (IgesFontStyle)IgesParameterReader.Integer(parameters, ref index);
+            str.CharacterAngle = IgesParameterReader.Double(parameters, ref index);
+            str.ControlCode = IgesParameterReader.String(parameters, ref index);
             str.PopulateFromParameters(parameters, binder, ref index);
             return str;
         }
@@ -86,41 +87,38 @@ namespace IxMilia.Iges.Entities
         public double TextContainmentAreaWidth { get; set; }
         public double TextContainmentAreaHeight { get; set; }
         public IgesTextJustification TextJustification { get; set; }
-        public IgesPoint TextContainmentAreaLocation { get; set; }
+        public Point3D TextContainmentAreaLocation { get; set; }
 
         /// <summary>
         /// The rotation angle of the text containment area in radians.
         /// </summary>
         public double TextContainmentAreaRotation { get; set; }
 
-        public IgesPoint FirstBaseLineLocation { get; set; }
+        public Point3D FirstBaseLineLocation { get; set; }
         public double NormalInterLineSpacing { get; set; }
 
         public IList<IgesNewTextString> Strings { get; private set; }
 
-        public IgesNewGeneralNote()
+        public IgesNewGeneralNote(IgesFile file)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Annotation;
-            TextContainmentAreaLocation = IgesPoint.Origin;
-            FirstBaseLineLocation = IgesPoint.Origin;
+            TextContainmentAreaLocation = Point3D.Origin;
+            FirstBaseLineLocation = Point3D.Origin;
             Strings = new List<IgesNewTextString>();
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            TextContainmentAreaWidth = Double(parameters, index++);
-            TextContainmentAreaHeight = Double(parameters, index++);
-            TextJustification = (IgesTextJustification)Integer(parameters, index++);
-            TextContainmentAreaLocation.X = Double(parameters, index++);
-            TextContainmentAreaLocation.Y = Double(parameters, index++);
-            TextContainmentAreaLocation.Z = Double(parameters, index++);
-            TextContainmentAreaRotation = Double(parameters, index++);
-            FirstBaseLineLocation.X = Double(parameters, index++);
-            FirstBaseLineLocation.Y = Double(parameters, index++);
-            FirstBaseLineLocation.Z = Double(parameters, index++);
-            NormalInterLineSpacing = Double(parameters, index++);
-            var stringCount = Integer(parameters, index++);
+            TextContainmentAreaWidth = Double(parameters, ref index);
+            TextContainmentAreaHeight = Double(parameters, ref index);
+            TextJustification = (IgesTextJustification)Integer(parameters, ref index);
+            TextContainmentAreaLocation = IgesPoint.Point3D(parameters, ref index);
+            TextContainmentAreaRotation = Double(parameters, ref index);
+            FirstBaseLineLocation = IgesPoint.Point3D(parameters, ref index);
+            NormalInterLineSpacing = Double(parameters, ref index);
+            var stringCount = Integer(parameters, ref index);
             for (int i = 0; i < stringCount; i++)
             {
                 Strings.Add(IgesNewTextString.ReadParameters(parameters, binder, ref index));
@@ -139,13 +137,13 @@ namespace IxMilia.Iges.Entities
             parameters.Add(TextContainmentAreaWidth);
             parameters.Add(TextContainmentAreaHeight);
             parameters.Add((int)TextJustification);
-            parameters.Add(TextContainmentAreaLocation?.X ?? 0.0);
-            parameters.Add(TextContainmentAreaLocation?.Y ?? 0.0);
-            parameters.Add(TextContainmentAreaLocation?.Z ?? 0.0);
+            parameters.Add(TextContainmentAreaLocation.X);
+            parameters.Add(TextContainmentAreaLocation.Y);
+            parameters.Add(TextContainmentAreaLocation.Z);
             parameters.Add(TextContainmentAreaRotation);
-            parameters.Add(FirstBaseLineLocation?.X ?? 0.0);
-            parameters.Add(FirstBaseLineLocation?.Y ?? 0.0);
-            parameters.Add(FirstBaseLineLocation?.Z ?? 0.0);
+            parameters.Add(FirstBaseLineLocation.X);
+            parameters.Add(FirstBaseLineLocation.Y);
+            parameters.Add(FirstBaseLineLocation.Z);
             parameters.Add(NormalInterLineSpacing);
             parameters.Add(Strings.Count);
             foreach (var str in Strings)

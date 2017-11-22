@@ -19,7 +19,8 @@ namespace IxMilia.Iges.Entities
             set { FormNumber = value ? 1 : 0; }
         }
 
-        public IgesSphericalSurface()
+        public IgesSphericalSurface(IgesFile file)
+            : base(file)
         {
             SubordinateEntitySwitchType = IgesSubordinateEntitySwitchType.PhysicallyDependent;
         }
@@ -27,12 +28,12 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            binder.BindEntity(Integer(parameters, index++), center => Center = center as IgesLocation);
-            Radius = Double(parameters, index++);
+            binder.BindEntity(Integer(parameters, ref index), center => Center = center as IgesLocation);
+            Radius = Double(parameters, ref index);
             if (IsParameterized)
             {
-                binder.BindEntity(Integer(parameters, index++), axis => AxisDirection = axis as IgesDirection);
-                binder.BindEntity(Integer(parameters, index++), refDir => ReferenceDirection = refDir as IgesDirection);
+                binder.BindEntity(Integer(parameters, ref index), axis => AxisDirection = axis as IgesDirection);
+                binder.BindEntity(Integer(parameters, ref index), refDir => ReferenceDirection = refDir as IgesDirection);
             }
 
             return index;

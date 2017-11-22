@@ -1,35 +1,37 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
 {
     public class IgesBlock : IgesEntity
     {
-        public override IgesEntityType EntityType { get { return IgesEntityType.Block; } }
+        public IgesBlock(IgesFile file) : base(file)
+        {
+            Corner = Point3D.Origin;
+            XAxis = IgesVector.XAxis;
+            ZAxis = IgesVector.ZAxis;
+        }
+
+    public override IgesEntityType EntityType { get { return IgesEntityType.Block; } }
 
         public double XLength { get; set; }
         public double YLength { get; set; }
         public double ZLength { get; set; }
-        public IgesPoint Corner { get; set; } = IgesPoint.Origin;
-        public IgesVector XAxis { get; set; } = IgesVector.XAxis;
-        public IgesVector ZAxis { get; set; } = IgesVector.ZAxis;
+        public Point3D Corner { get; set; } 
+        public Vector3D XAxis { get; set; } 
+        public Vector3D ZAxis { get; set; } 
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            XLength = Double(parameters, index++);
-            YLength = Double(parameters, index++);
-            ZLength = Double(parameters, index++);
-            Corner.X = Double(parameters, index++);
-            Corner.Y = Double(parameters, index++);
-            Corner.Z = Double(parameters, index++);
-            XAxis.X = DoubleOrDefault(parameters, index++, 1.0);
-            XAxis.Y = Double(parameters, index++);
-            XAxis.Z = Double(parameters, index++);
-            ZAxis.X = Double(parameters, index++);
-            ZAxis.Y = Double(parameters, index++);
-            ZAxis.Z = DoubleOrDefault(parameters, index++, 1.0);
+            XLength = Double(parameters, ref index);
+            YLength = Double(parameters, ref index);
+            ZLength = Double(parameters, ref index);
+            Corner = IgesPoint.Point3D(parameters, ref index);
+            XAxis = IgesVector.ReadXAxis(parameters, ref index);
+            ZAxis = IgesVector.ReadZAxis(parameters, ref index);
             return index;
         }
 
@@ -38,15 +40,15 @@ namespace IxMilia.Iges.Entities
             parameters.Add(XLength);
             parameters.Add(YLength);
             parameters.Add(ZLength);
-            parameters.Add(Corner?.X ?? 0.0);
-            parameters.Add(Corner?.Y ?? 0.0);
-            parameters.Add(Corner?.Z ?? 0.0);
-            parameters.Add(XAxis?.X ?? 1.0);
-            parameters.Add(XAxis?.Y ?? 0.0);
-            parameters.Add(XAxis?.Z ?? 0.0);
-            parameters.Add(ZAxis?.X ?? 0.0);
-            parameters.Add(ZAxis?.Y ?? 0.0);
-            parameters.Add(ZAxis?.Z ?? 1.0);
+            parameters.Add(Corner.X);
+            parameters.Add(Corner.Y);
+            parameters.Add(Corner.Z);
+            parameters.Add(XAxis.X);
+            parameters.Add(XAxis.Y);
+            parameters.Add(XAxis.Z);
+            parameters.Add(ZAxis.X);
+            parameters.Add(ZAxis.Y);
+            parameters.Add(ZAxis.Z);
         }
     }
 }

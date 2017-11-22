@@ -45,7 +45,7 @@ namespace IxMilia.Iges.Entities
                 }
                 else if (!EntityMap.ContainsKey(entity))
                 {
-                    var index = entity.AddDirectoryAndParameterLines(this);
+                    var index = entity.AddDirectoryAndParameterLines(this, entity.File);
                     EntityMap[entity] = index;
                     return index;
                 }
@@ -63,17 +63,17 @@ namespace IxMilia.Iges.Entities
                 }
             }
 
-            public int GetLevelsPointer(HashSet<int> levels)
+            public int GetLevelsPointer(HashSet<int> levels, IgesFile file)
             {
                 if (!_levelsPointers.ContainsKey(levels))
                 {
-                    var custom = new IgesDefinitionLevelsProperty();
+                    var custom = new IgesDefinitionLevelsProperty(file);
                     foreach (var level in levels)
                     {
                         custom.DefinedLevels.Add(level);
                     }
 
-                    var index = custom.AddDirectoryAndParameterLines(this);
+                    var index = custom.AddDirectoryAndParameterLines(this, file);
                     _levelsPointers[levels] = index;
                     return index;
                 }

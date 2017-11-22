@@ -7,12 +7,11 @@ namespace IxMilia.Iges
 {
     internal static class IgesParameterReader
     {
-        public static double Double(List<string> values, int index)
+        public static double Double(List<string> values, ref int index, double defaultValue = 0.0)
         {
-            return DoubleOrDefault(values, index, 0.0);
+            return Double(values, index++, defaultValue);
         }
-
-        public static double DoubleOrDefault(List<string> values, int index, double defaultValue)
+        public static double Double(List<string> values, int index, double defaultValue = 0.0)
         {
             if (index < values.Count)
             {
@@ -26,12 +25,11 @@ namespace IxMilia.Iges
             }
         }
 
-        public static int Integer(List<string> values, int index)
+        public static int Integer(List<string> values, ref int index, int defaultValue = 0)
         {
-            return IntegerOrDefault(values, index, 0);
+            return Integer(values, index++, defaultValue);
         }
-
-        public static int IntegerOrDefault(List<string> values, int index, int defaultValue)
+        public static int Integer(List<string> values, int index, int defaultValue = 0)
         {
             if (index < values.Count)
             {
@@ -45,55 +43,42 @@ namespace IxMilia.Iges
             }
         }
 
-        public static string String(List<string> values, int index)
+        public static string String(List<string> values, ref int index, string defaultValue = null)
         {
-            return StringOrDefault(values, index, null);
+            return String(values, index++, defaultValue);
+        }
+        public static string String(List<string> values, int index, string defaultValue = null)
+        {
+            return (index < values.Count) ? values[index] : defaultValue;
         }
 
-        public static string StringOrDefault(List<string> values, int index, string defaultValue)
+        public static bool Boolean(List<string> values, ref int index, bool defaultValue = false)
         {
-            if (index < values.Count)
-            {
-                return values[index];
-            }
-            else
-            {
-                return defaultValue;
-            }
+            return Boolean(values, index++, defaultValue);
         }
 
-        public static bool Boolean(List<string> values, int index)
+        public static bool Boolean(List<string> values, int index, bool defaultValue = false)
         {
-            return BooleanOrDefault(values, index, false);
+            return (index < values.Count) ? Integer(values, index) != 0 : defaultValue;
         }
 
-        public static bool BooleanOrDefault(List<string> values, int index, bool defaultValue)
+        public static DateTime DateTime(List<string> values, ref int index)
         {
-            if (index < values.Count)
-            {
-                return Integer(values, index) != 0;
-            }
-            else
-            {
-                return defaultValue;
-            }
+            return DateTime(values, ref index, System.DateTime.MinValue);
         }
-
         public static DateTime DateTime(List<string> values, int index)
         {
-            return DateTimeOrDefault(values, index, System.DateTime.MinValue);
+            return DateTime(values, index, System.DateTime.MinValue);
         }
 
-        public static DateTime DateTimeOrDefault(List<string> values, int index, DateTime defaultValue)
+
+        public static DateTime DateTime(List<string> values, ref int index, DateTime defaultValue)
         {
-            if (index < values.Count)
-            {
-                return IgesFileReader.ParseDateTime(values[index], defaultValue);
-            }
-            else
-            {
-                return defaultValue;
-            }
+            return DateTime(values, index++, defaultValue);
+        }
+        public static DateTime DateTime(List<string> values, int index, DateTime defaultValue)
+        {
+            return (index < values.Count) ? IgesFileReader.ParseDateTime(values[index], defaultValue) : defaultValue;
         }
     }
 }

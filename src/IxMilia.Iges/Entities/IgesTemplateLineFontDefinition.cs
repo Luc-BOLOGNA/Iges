@@ -19,13 +19,13 @@ namespace IxMilia.Iges.Entities
         public double CommonArcLength { get; set; }
         public double ScaleFactor { get; set; }
 
-        public IgesTemplateLineFontDefinition()
-            : this(new IgesSubfigureDefinition(), 0.0, 0.0)
+        public IgesTemplateLineFontDefinition(IgesFile file)
+            : this(new IgesSubfigureDefinition(file), 0.0, 0.0)
         {
         }
 
         public IgesTemplateLineFontDefinition(IgesSubfigureDefinition template, double commonArcLength, double scaleFactor)
-            : base()
+            : base(template.File)
         {
             this.FormNumber = 1;
             Template = template;

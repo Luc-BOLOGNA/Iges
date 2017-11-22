@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System;
 using System.Collections.Generic;
 
@@ -88,7 +89,7 @@ namespace IxMilia.Iges.Entities
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.ConnectPoint; } }
 
-        public IgesPoint Location { get; set; }
+        public Point3D Location { get; set; }
         public IgesEntity DisplaySymbolGeometry { get; set; }
         public IgesConnectionType ConnectionType { get; set; }
         public int RawConnectionType { get; set; }
@@ -103,18 +104,16 @@ namespace IxMilia.Iges.Entities
         public bool ConnectPointMayBeSwapped { get; set; }
         public IgesEntity Owner { get; set; }
 
-        public IgesConnectPoint()
-            : base()
+        public IgesConnectPoint(IgesFile file)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.LogicalOrPositional;
-            Location = IgesPoint.Origin;
+            Location = Point3D.Origin;
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
-            Location.X = Double(parameters, 0);
-            Location.Y = Double(parameters, 1);
-            Location.Z = Double(parameters, 2);
+            Location = IgesPoint.Point3D(parameters, 0);
             binder.BindEntity(Integer(parameters, 3), e => DisplaySymbolGeometry = e);
             RawConnectionType = Integer(parameters, 4);
             ConnectionType = Enum.IsDefined(typeof(IgesConnectionType), RawConnectionType)
@@ -145,9 +144,9 @@ namespace IxMilia.Iges.Entities
 
         internal override void WriteParameters(List<object> parameters, IgesWriterBinder binder)
         {
-            parameters.Add(Location?.X ?? 0.0);
-            parameters.Add(Location?.Y ?? 0.0);
-            parameters.Add(Location?.Z ?? 0.0);
+            parameters.Add(Location.X);
+            parameters.Add(Location.Y);
+            parameters.Add(Location.Z);
             parameters.Add(binder.GetEntityId(DisplaySymbolGeometry));
             parameters.Add(ConnectionType == IgesConnectionType.ImplementorDefined ? RawConnectionType : (int)ConnectionType);
             parameters.Add((int)FunctionType);

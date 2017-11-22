@@ -11,8 +11,8 @@ namespace IxMilia.Iges.Entities
         protected override int TopologyNumber { get { return CustomTopologyNumber; } }
         public override IgesElementEdgeOrder EdgeOrder { get { return IgesElementEdgeOrder.NotApplicable; } }
 
-        public IgesCustomFiniteElement(int customTopologyNumber)
-            : base(IgesTopologyType.Custom)
+        public IgesCustomFiniteElement(IgesFile file, int customTopologyNumber)
+            : base(file, IgesTopologyType.Custom)
         {
             CustomTopologyNumber = customTopologyNumber;
             Nodes = new List<IgesNode>();
@@ -25,7 +25,7 @@ namespace IxMilia.Iges.Entities
 
         internal static IgesCustomFiniteElement FromDummy(IgesFiniteElementDummy dummy)
         {
-            var custom = new IgesCustomFiniteElement((int)dummy.TopologyType);
+            var custom = new IgesCustomFiniteElement(dummy.File, (int)dummy.TopologyType);
             custom.Nodes.AddRange(dummy.InternalNodes);
             return custom;
         }

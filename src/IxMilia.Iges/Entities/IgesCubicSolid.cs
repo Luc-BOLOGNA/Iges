@@ -1,78 +1,81 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
+
 namespace IxMilia.Iges.Entities
 {
     public class IgesCubicSolid : IgesFiniteElement
     {
         public override IgesElementEdgeOrder EdgeOrder { get { return IgesElementEdgeOrder.Cubic; } }
 
-        public IgesPoint P1 { get; set; }
-        public IgesPoint P1P2Control1 { get; set; }
-        public IgesPoint P1P2Control2 { get; set; }
-        public IgesPoint P2 { get; set; }
-        public IgesPoint P2P3Control1 { get; set; }
-        public IgesPoint P2P3Control2 { get; set; }
-        public IgesPoint P3 { get; set; }
-        public IgesPoint P3P4Control1 { get; set; }
-        public IgesPoint P3P4Control2 { get; set; }
-        public IgesPoint P4 { get; set; }
-        public IgesPoint P4P1Control1 { get; set; }
-        public IgesPoint P4P1Control2 { get; set; }
-        public IgesPoint P5P1Control1 { get; set; }
-        public IgesPoint P6P2Control1 { get; set; }
-        public IgesPoint P7P3Control1 { get; set; }
-        public IgesPoint P8P4Control1 { get; set; }
-        public IgesPoint P5P1Control2 { get; set; }
-        public IgesPoint P6P2Control2 { get; set; }
-        public IgesPoint P7P3Control2 { get; set; }
-        public IgesPoint P8P4Control2 { get; set; }
-        public IgesPoint P5 { get; set; }
-        public IgesPoint P5P6Control1 { get; set; }
-        public IgesPoint P5P6Control2 { get; set; }
-        public IgesPoint P6 { get; set; }
-        public IgesPoint P6P7Control1 { get; set; }
-        public IgesPoint P6P7Control2 { get; set; }
-        public IgesPoint P7 { get; set; }
-        public IgesPoint P7P8Control1 { get; set; }
-        public IgesPoint P7P8Control2 { get; set; }
-        public IgesPoint P8 { get; set; }
-        public IgesPoint P8P5Control1 { get; set; }
-        public IgesPoint P8P5Control2 { get; set; }
+        public Point3D P1 { get; set; }
+        public Point3D P1P2Control1 { get; set; }
+        public Point3D P1P2Control2 { get; set; }
+        public Point3D P2 { get; set; }
+        public Point3D P2P3Control1 { get; set; }
+        public Point3D P2P3Control2 { get; set; }
+        public Point3D P3 { get; set; }
+        public Point3D P3P4Control1 { get; set; }
+        public Point3D P3P4Control2 { get; set; }
+        public Point3D P4 { get; set; }
+        public Point3D P4P1Control1 { get; set; }
+        public Point3D P4P1Control2 { get; set; }
+        public Point3D P5P1Control1 { get; set; }
+        public Point3D P6P2Control1 { get; set; }
+        public Point3D P7P3Control1 { get; set; }
+        public Point3D P8P4Control1 { get; set; }
+        public Point3D P5P1Control2 { get; set; }
+        public Point3D P6P2Control2 { get; set; }
+        public Point3D P7P3Control2 { get; set; }
+        public Point3D P8P4Control2 { get; set; }
+        public Point3D P5 { get; set; }
+        public Point3D P5P6Control1 { get; set; }
+        public Point3D P5P6Control2 { get; set; }
+        public Point3D P6 { get; set; }
+        public Point3D P6P7Control1 { get; set; }
+        public Point3D P6P7Control2 { get; set; }
+        public Point3D P7 { get; set; }
+        public Point3D P7P8Control1 { get; set; }
+        public Point3D P7P8Control2 { get; set; }
+        public Point3D P8 { get; set; }
+        public Point3D P8P5Control1 { get; set; }
+        public Point3D P8P5Control2 { get; set; }
 
         public IgesCubicSolid(
-            IgesPoint p1,
-            IgesPoint p1P2Control1,
-            IgesPoint p1P2Control2,
-            IgesPoint p2,
-            IgesPoint p2P3Control1,
-            IgesPoint p2P3Control2,
-            IgesPoint p3,
-            IgesPoint p3P4Control1,
-            IgesPoint p3P4Control2,
-            IgesPoint p4,
-            IgesPoint p4P1Control1,
-            IgesPoint p4P1Control2,
-            IgesPoint p5P1Control1,
-            IgesPoint p6P2Control1,
-            IgesPoint p7P3Control1,
-            IgesPoint p8P4Control1,
-            IgesPoint p5P1Control2,
-            IgesPoint p6P2Control2,
-            IgesPoint p7P3Control2,
-            IgesPoint p8P4Control2,
-            IgesPoint p5,
-            IgesPoint p5P6Control1,
-            IgesPoint p5P6Control2,
-            IgesPoint p6,
-            IgesPoint p6P7Control1,
-            IgesPoint p6P7Control2,
-            IgesPoint p7,
-            IgesPoint p7P8Control1,
-            IgesPoint p7P8Control2,
-            IgesPoint p8,
-            IgesPoint p8P5Control1,
-            IgesPoint p8P5Control2)
-            : base(IgesTopologyType.CubicSolid)
+            IgesFile file,
+            Point3D p1,
+            Point3D p1P2Control1,
+            Point3D p1P2Control2,
+            Point3D p2,
+            Point3D p2P3Control1,
+            Point3D p2P3Control2,
+            Point3D p3,
+            Point3D p3P4Control1,
+            Point3D p3P4Control2,
+            Point3D p4,
+            Point3D p4P1Control1,
+            Point3D p4P1Control2,
+            Point3D p5P1Control1,
+            Point3D p6P2Control1,
+            Point3D p7P3Control1,
+            Point3D p8P4Control1,
+            Point3D p5P1Control2,
+            Point3D p6P2Control2,
+            Point3D p7P3Control2,
+            Point3D p8P4Control2,
+            Point3D p5,
+            Point3D p5P6Control1,
+            Point3D p5P6Control2,
+            Point3D p6,
+            Point3D p6P7Control1,
+            Point3D p6P7Control2,
+            Point3D p7,
+            Point3D p7P8Control1,
+            Point3D p7P8Control2,
+            Point3D p8,
+            Point3D p8P5Control1,
+            Point3D p8P5Control2)
+            : base(file, IgesTopologyType.CubicSolid)
         {
             P1 = p1;
             P1P2Control1 = p1P2Control1;
@@ -110,43 +113,44 @@ namespace IxMilia.Iges.Entities
 
         protected override void AddNodes()
         {
-            InternalNodes.Add(new IgesNode(P1));
-            InternalNodes.Add(new IgesNode(P1P2Control1));
-            InternalNodes.Add(new IgesNode(P1P2Control2));
-            InternalNodes.Add(new IgesNode(P2));
-            InternalNodes.Add(new IgesNode(P2P3Control1));
-            InternalNodes.Add(new IgesNode(P2P3Control2));
-            InternalNodes.Add(new IgesNode(P3));
-            InternalNodes.Add(new IgesNode(P3P4Control1));
-            InternalNodes.Add(new IgesNode(P3P4Control2));
-            InternalNodes.Add(new IgesNode(P4));
-            InternalNodes.Add(new IgesNode(P4P1Control1));
-            InternalNodes.Add(new IgesNode(P4P1Control2));
-            InternalNodes.Add(new IgesNode(P5P1Control1));
-            InternalNodes.Add(new IgesNode(P6P2Control1));
-            InternalNodes.Add(new IgesNode(P7P3Control1));
-            InternalNodes.Add(new IgesNode(P8P4Control1));
-            InternalNodes.Add(new IgesNode(P5P1Control2));
-            InternalNodes.Add(new IgesNode(P6P2Control2));
-            InternalNodes.Add(new IgesNode(P7P3Control2));
-            InternalNodes.Add(new IgesNode(P8P4Control2));
-            InternalNodes.Add(new IgesNode(P5));
-            InternalNodes.Add(new IgesNode(P5P6Control1));
-            InternalNodes.Add(new IgesNode(P5P6Control2));
-            InternalNodes.Add(new IgesNode(P6));
-            InternalNodes.Add(new IgesNode(P6P7Control1));
-            InternalNodes.Add(new IgesNode(P6P7Control2));
-            InternalNodes.Add(new IgesNode(P7));
-            InternalNodes.Add(new IgesNode(P7P8Control1));
-            InternalNodes.Add(new IgesNode(P7P8Control2));
-            InternalNodes.Add(new IgesNode(P8));
-            InternalNodes.Add(new IgesNode(P8P5Control1));
-            InternalNodes.Add(new IgesNode(P8P5Control2));
+            InternalNodes.Add(new IgesNode(File, P1));
+            InternalNodes.Add(new IgesNode(File, P1P2Control1));
+            InternalNodes.Add(new IgesNode(File, P1P2Control2));
+            InternalNodes.Add(new IgesNode(File, P2));
+            InternalNodes.Add(new IgesNode(File, P2P3Control1));
+            InternalNodes.Add(new IgesNode(File, P2P3Control2));
+            InternalNodes.Add(new IgesNode(File, P3));
+            InternalNodes.Add(new IgesNode(File, P3P4Control1));
+            InternalNodes.Add(new IgesNode(File, P3P4Control2));
+            InternalNodes.Add(new IgesNode(File, P4));
+            InternalNodes.Add(new IgesNode(File, P4P1Control1));
+            InternalNodes.Add(new IgesNode(File, P4P1Control2));
+            InternalNodes.Add(new IgesNode(File, P5P1Control1));
+            InternalNodes.Add(new IgesNode(File, P6P2Control1));
+            InternalNodes.Add(new IgesNode(File, P7P3Control1));
+            InternalNodes.Add(new IgesNode(File, P8P4Control1));
+            InternalNodes.Add(new IgesNode(File, P5P1Control2));
+            InternalNodes.Add(new IgesNode(File, P6P2Control2));
+            InternalNodes.Add(new IgesNode(File, P7P3Control2));
+            InternalNodes.Add(new IgesNode(File, P8P4Control2));
+            InternalNodes.Add(new IgesNode(File, P5));
+            InternalNodes.Add(new IgesNode(File, P5P6Control1));
+            InternalNodes.Add(new IgesNode(File, P5P6Control2));
+            InternalNodes.Add(new IgesNode(File, P6));
+            InternalNodes.Add(new IgesNode(File, P6P7Control1));
+            InternalNodes.Add(new IgesNode(File, P6P7Control2));
+            InternalNodes.Add(new IgesNode(File, P7));
+            InternalNodes.Add(new IgesNode(File, P7P8Control1));
+            InternalNodes.Add(new IgesNode(File, P7P8Control2));
+            InternalNodes.Add(new IgesNode(File, P8));
+            InternalNodes.Add(new IgesNode(File, P8P5Control1));
+            InternalNodes.Add(new IgesNode(File, P8P5Control2));
         }
 
         internal static IgesCubicSolid FromDummy(IgesFiniteElementDummy dummy)
         {
             return new IgesCubicSolid(
+                dummy.File,
                 GetNodeOffset(dummy, 0),
                 GetNodeOffset(dummy, 1),
                 GetNodeOffset(dummy, 2),

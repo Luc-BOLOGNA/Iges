@@ -8,8 +8,8 @@ namespace IxMilia.Iges.Entities
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.Null; } }
 
-        public IgesNull()
-            : base()
+        public IgesNull(IgesFile file)
+            : base(file)
         {
         }
 

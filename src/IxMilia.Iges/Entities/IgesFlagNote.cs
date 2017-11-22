@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace IxMilia.Iges.Entities
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.FlagNote; } }
 
-        public IgesPoint Location { get; set; }
+        public Point3D Location { get; set; }
 
         /// <summary>
         /// The flag's rotation angle in radians.
@@ -47,27 +48,26 @@ namespace IxMilia.Iges.Entities
         /// </summary>
         public double TipLength { get { return Height * 0.5 / Math.Tan(35.0 * Math.PI / 180.0); } }
 
-        public IgesFlagNote()
+        public IgesFlagNote(IgesFile file)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Annotation;
-            Location = IgesPoint.Origin;
+            Location = Point3D.Origin;
             Leaders = new List<IgesLeader>();
         }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            Location.X = Double(parameters, index++);
-            Location.Y = Double(parameters, index++);
-            Location.Z = Double(parameters, index++);
-            RotationAngle = Double(parameters, index++);
-            binder.BindEntity(Integer(parameters, index++), note => GeneralNote = note as IgesGeneralNote);
-            var leaderCount = Integer(parameters, index++);
+            Location = IgesPoint.Point3D(parameters, ref index);
+            RotationAngle = Double(parameters, ref index);
+            binder.BindEntity(Integer(parameters, ref index), note => GeneralNote = note as IgesGeneralNote);
+            var leaderCount = Integer(parameters, ref index);
             Leaders = new IgesLeader[leaderCount].ToList();
             for (int i = 0; i < leaderCount; i++)
             {
                 var idx = i;
-                binder.BindEntity(Integer(parameters, index++), leader => Leaders[idx] = leader as IgesLeader);
+                binder.BindEntity(Integer(parameters, ref index), leader => Leaders[idx] = leader as IgesLeader);
             }
 
             return index;
@@ -84,9 +84,9 @@ namespace IxMilia.Iges.Entities
 
         internal override void WriteParameters(List<object> parameters, IgesWriterBinder binder)
         {
-            parameters.Add(Location?.X ?? 0.0);
-            parameters.Add(Location?.Y ?? 0.0);
-            parameters.Add(Location?.Z ?? 0.0);
+            parameters.Add(Location.X);
+            parameters.Add(Location.Y);
+            parameters.Add(Location.Z);
             parameters.Add(RotationAngle);
             parameters.Add(binder.GetEntityId(GeneralNote));
             parameters.Add(Leaders.Count);

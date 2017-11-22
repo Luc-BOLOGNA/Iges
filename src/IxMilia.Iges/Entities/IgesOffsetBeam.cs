@@ -1,22 +1,25 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
+
 namespace IxMilia.Iges.Entities
 {
     public class IgesOffsetBeam : IgesFiniteElement
     {
         public override IgesElementEdgeOrder EdgeOrder { get { return IgesElementEdgeOrder.Linear; } }
 
-        public IgesPoint Offset1 { get; set; }
-        public IgesPoint Offset2 { get; set; }
-        public IgesPoint P1 { get; set; }
-        public IgesPoint P2 { get; set; }
+        public Point3D Offset1 { get; set; }
+        public Point3D Offset2 { get; set; }
+        public Point3D P1 { get; set; }
+        public Point3D P2 { get; set; }
 
         public IgesOffsetBeam(
-            IgesPoint offset1,
-            IgesPoint offset2,
-            IgesPoint p1,
-            IgesPoint p2)
-            : base(IgesTopologyType.OffsetBeam)
+            IgesFile file,
+            Point3D offset1,
+            Point3D offset2,
+            Point3D p1,
+            Point3D p2)
+            : base(file, IgesTopologyType.OffsetBeam)
         {
             Offset1 = offset1;
             Offset2 = offset2;
@@ -26,15 +29,16 @@ namespace IxMilia.Iges.Entities
 
         protected override void AddNodes()
         {
-            InternalNodes.Add(new IgesNode(Offset1));
-            InternalNodes.Add(new IgesNode(Offset2));
-            InternalNodes.Add(new IgesNode(P1));
-            InternalNodes.Add(new IgesNode(P2));
+            InternalNodes.Add(new IgesNode(File, Offset1));
+            InternalNodes.Add(new IgesNode(File, Offset2));
+            InternalNodes.Add(new IgesNode(File, P1));
+            InternalNodes.Add(new IgesNode(File, P2));
         }
 
         internal static IgesOffsetBeam FromDummy(IgesFiniteElementDummy dummy)
         {
             return new IgesOffsetBeam(
+                dummy.File,
                 GetNodeOffset(dummy, 0),
                 GetNodeOffset(dummy, 1),
                 GetNodeOffset(dummy, 2),

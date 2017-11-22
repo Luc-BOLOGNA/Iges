@@ -4,6 +4,10 @@ namespace IxMilia.Iges.Entities
 {
     public abstract class IgesAssociativity : IgesEntity
     {
+        protected IgesAssociativity(IgesFile file) : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.AssociativityInstance; } }
     }
 }

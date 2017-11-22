@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -13,13 +14,13 @@ namespace IxMilia.Iges.Entities
         public double Y { get; set; }
         public double Z { get; set; }
 
-        public IgesLocation()
-            : this(0.0, 0.0, 0.0)
+        public IgesLocation(IgesFile file)
+            : this(0.0, 0.0, 0.0, file)
         {
         }
 
-        public IgesLocation(double x, double y, double z)
-            : base()
+        public IgesLocation(double x, double y, double z, IgesFile file)
+            : base(file)
         {
             this.X = x;
             this.Y = y;
@@ -41,9 +42,9 @@ namespace IxMilia.Iges.Entities
             parameters.Add(this.Z);
         }
 
-        public IgesPoint ToPoint()
+        public Point3D ToPoint()
         {
-            return new IgesPoint(X, Y, Z);
+            return new Point3D(X, Y, Z);
         }
     }
 }

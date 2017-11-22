@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -13,8 +14,13 @@ namespace IxMilia.Iges.Entities
         Parabola = 3
     }
 
-    public class IgesConicArc : IgesEntity
+    public class IgesConicArc : IgesEntity, IIgesDrawable3D
     {
+        public IgesConicArc(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.ConicArc; } }
 
         public double CoefficientA { get; set; }
@@ -23,8 +29,17 @@ namespace IxMilia.Iges.Entities
         public double CoefficientD { get; set; }
         public double CoefficientE { get; set; }
         public double CoefficientF { get; set; }
-        public IgesPoint StartPoint { get; set; }
-        public IgesPoint EndPoint { get; set; }
+        public Point3D StartPoint { get; set; }
+        public Point3D EndPoint { get; set; }
+
+        public IIgesDrawable3D Reverse()
+        {
+            Point3D tmp = StartPoint;
+            StartPoint = EndPoint;
+            EndPoint = tmp;
+
+            return this;
+        }
 
         public double Q1
         {
@@ -89,10 +104,10 @@ namespace IxMilia.Iges.Entities
             var planeOffset = Double(parameters, 6);
             var x = Double(parameters, 7);
             var y = Double(parameters, 8);
-            StartPoint = new IgesPoint(x, y, planeOffset);
+            StartPoint = new Point3D(x, y, planeOffset);
             x = Double(parameters, 9);
             y = Double(parameters, 10);
-            EndPoint = new IgesPoint(x, y, planeOffset);
+            EndPoint = new Point3D(x, y, planeOffset);
             return 11;
         }
 
@@ -118,9 +133,9 @@ namespace IxMilia.Iges.Entities
             FormNumber = (int)ArcType;
         }
 
-        public static IgesConicArc MakeEllipse(double majorAxis, double minorAxis)
+        public static IgesConicArc MakeEllipse(IgesFile file, double majorAxis, double minorAxis)
         {
-            var arc = new IgesConicArc();
+            var arc = new IgesConicArc(file);
             arc.CoefficientA = minorAxis * minorAxis;
             arc.CoefficientB = 0.0;
             arc.CoefficientC = majorAxis * majorAxis;

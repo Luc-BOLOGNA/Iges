@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -22,13 +23,13 @@ namespace IxMilia.Iges.Entities
         public double R33 { get; set; }
         public double T3 { get; set; }
 
-        public IgesTransformationMatrix()
-            : this(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        public IgesTransformationMatrix(IgesFile file)
+            : this(file, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         {
         }
 
-        public IgesTransformationMatrix(double r11, double r12, double r13, double t1, double r21, double r22, double r23, double t2, double r31, double r32, double r33, double t3)
-            : base()
+        public IgesTransformationMatrix(IgesFile file, double r11, double r12, double r13, double t1, double r21, double r22, double r23, double t2, double r31, double r32, double r33, double t3)
+            : base(file)
         {
             this.R11 = r11;
             this.R12 = r12;
@@ -77,9 +78,9 @@ namespace IxMilia.Iges.Entities
             parameters.Add(this.T3);
         }
 
-        public IgesPoint Transform(IgesPoint point)
+        public Point3D Transform(Point3D point)
         {
-            return new IgesPoint(
+            return new Point3D(
                 (R11 * point.X + R12 * point.Y + R13 * point.Z) + T1,
                 (R21 * point.X + R22 * point.Y + R23 * point.Z) + T2,
                 (R31 * point.X + R32 * point.Y + R33 * point.Z) + T3);
@@ -105,26 +106,12 @@ namespace IxMilia.Iges.Entities
             }
         }
 
-        public static IgesTransformationMatrix Identity
+        public static IgesTransformationMatrix Identity(IgesFile file)
         {
-            get
-            {
-                return new IgesTransformationMatrix()
-                {
-                    R11 = 1.0,
-                    R12 = 0.0,
-                    R13 = 0.0,
-                    T1 = 0.0,
-                    R21 = 0.0,
-                    R22 = 1.0,
-                    R23 = 0.0,
-                    T2 = 0.0,
-                    R31 = 0.0,
-                    R32 = 0.0,
-                    R33 = 1.0,
-                    T3 = 0.0,
-                };
-            }
+            return new IgesTransformationMatrix(file,
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,12 +28,12 @@ namespace IxMilia.Iges.Entities
 
     public class IgesNodalAnalysisCase
     {
-        public IgesVector Offset { get; set; }
+        public Vector3D Offset { get; set; }
         public double XRotation { get; set; }
         public double YRotation { get; set; }
         public double ZRotation { get; set; }
 
-        public IgesNodalAnalysisCase(IgesVector offset, double xRotation, double yRotation, double zRotation)
+        public IgesNodalAnalysisCase(Vector3D offset, double xRotation, double yRotation, double zRotation)
         {
             Offset = offset;
             XRotation = xRotation;
@@ -47,7 +48,8 @@ namespace IxMilia.Iges.Entities
 
         public List<IgesNodalAnalysis> NodeAnalyses { get; private set; }
 
-        public IgesNodalDisplacementAndRotation()
+        public IgesNodalDisplacementAndRotation(IgesFile file)
+            : base(file)
         {
             NodeAnalyses = new List<IgesNodalAnalysis>();
         }
@@ -55,30 +57,30 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            var analysisCount = Integer(parameters, index++);
+            var analysisCount = Integer(parameters, ref index);
             NodeAnalyses = Enumerable.Range(0, analysisCount).Select(_ => new IgesNodalAnalysis()).ToList();
             for (int i = 0; i < analysisCount; i++)
             {
                 var idx = i;
-                binder.BindEntity(Integer(parameters, index++), e => NodeAnalyses[idx].GeneralNote = e as IgesGeneralNote);
+                binder.BindEntity(Integer(parameters, ref index), e => NodeAnalyses[idx].GeneralNote = e as IgesGeneralNote);
             }
 
-            var nodeCount = Integer(parameters, index++);
+            var nodeCount = Integer(parameters, ref index);
             for (int i = 0; i < nodeCount; i++)
             {
                 var idx = i;
                 var analysisCases = new List<IgesNodalAnalysisCase>();
-                NodeAnalyses[idx].Identifier = Integer(parameters, index++);
-                binder.BindEntity(Integer(parameters, index++), e => NodeAnalyses[idx].FiniteElement = e as IgesFiniteElement);
+                NodeAnalyses[idx].Identifier = Integer(parameters, ref index);
+                binder.BindEntity(Integer(parameters, ref index), e => NodeAnalyses[idx].FiniteElement = e as IgesFiniteElement);
                 for (int j = 0; j < analysisCount; j++)
                 {
-                    var x = Double(parameters, index++);
-                    var y = Double(parameters, index++);
-                    var z = Double(parameters, index++);
-                    var rx = Double(parameters, index++);
-                    var ry = Double(parameters, index++);
-                    var rz = Double(parameters, index++);
-                    analysisCases.Add(new IgesNodalAnalysisCase(new IgesVector(x, y, z), rx, ry, rz));
+                    var x = Double(parameters, ref index);
+                    var y = Double(parameters, ref index);
+                    var z = Double(parameters, ref index);
+                    var rx = Double(parameters, ref index);
+                    var ry = Double(parameters, ref index);
+                    var rz = Double(parameters, ref index);
+                    analysisCases.Add(new IgesNodalAnalysisCase(new Vector3D(x, y, z), rx, ry, rz));
                 }
             }
 

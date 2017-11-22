@@ -6,6 +6,11 @@ namespace IxMilia.Iges.Entities
 {
     public abstract class IgesProperty : IgesEntity
     {
+        public IgesProperty(IgesFile file)
+            : base(file)
+        {
+        }
+
         protected int PropertyCount { get; set; }
 
         public override IgesEntityType EntityType { get { return IgesEntityType.Property; } }

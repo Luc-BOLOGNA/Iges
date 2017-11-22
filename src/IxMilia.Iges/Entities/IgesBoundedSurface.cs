@@ -13,8 +13,8 @@ namespace IxMilia.Iges.Entities
         public IgesEntity Surface { get; set; }
         public List<IgesEntity> BoundaryEntities { get; private set; }
 
-        public IgesBoundedSurface()
-            : base()
+        public IgesBoundedSurface(IgesFile file)
+            : base(file)
         {
             BoundaryEntities = new List<IgesEntity>();
         }
@@ -22,12 +22,12 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            AreBoundaryEntitiesOnlyInModelSpace = !Boolean(parameters, index++);
-            binder.BindEntity(Integer(parameters, index++), e => Surface = e);
-            var boundaryItemCount = Integer(parameters, index++);
+            AreBoundaryEntitiesOnlyInModelSpace = !Boolean(parameters, ref index);
+            binder.BindEntity(Integer(parameters, ref index), e => Surface = e);
+            var boundaryItemCount = Integer(parameters, ref index);
             for (int i = 0; i < boundaryItemCount; i++)
             {
-                binder.BindEntity(Integer(parameters, index++), e => BoundaryEntities.Add(e));
+                binder.BindEntity(Integer(parameters, ref index), e => BoundaryEntities.Add(e));
             }
 
             return index;

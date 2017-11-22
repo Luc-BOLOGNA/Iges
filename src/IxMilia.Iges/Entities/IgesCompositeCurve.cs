@@ -12,8 +12,8 @@ namespace IxMilia.Iges.Entities
         // custom properties
         public List<IgesEntity> Entities { get; private set; }
 
-        public IgesCompositeCurve()
-            : base()
+        public IgesCompositeCurve(IgesFile file)
+            : base(file)
         {
             Entities = new List<IgesEntity>();
         }

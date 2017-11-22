@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -11,16 +12,16 @@ namespace IxMilia.Iges.Entities
         // properties
         public double RingRadius { get; set; }
         public double DiscRadius { get; set; }
-        public IgesPoint Center { get; set; }
-        public IgesVector Normal { get; set; }
+        public Point3D Center { get; set; }
+        public Vector3D Normal { get; set; }
 
-        public IgesTorus()
-            : this(0.0, 0.0, IgesPoint.Origin, IgesVector.ZAxis)
+        public IgesTorus(IgesFile file)
+            : this(file, 0.0, 0.0, Point3D.Origin, IgesVector.ZAxis)
         {
         }
 
-        public IgesTorus(double ringRadius, double discRadius, IgesPoint center, IgesVector normal)
-            : base()
+        public IgesTorus(IgesFile file, double ringRadius, double discRadius, Point3D center, Vector3D normal)
+            : base(file)
         {
             this.BlankStatus = IgesBlankStatus.Visible;
             this.SubordinateEntitySwitchType = IgesSubordinateEntitySwitchType.Independent;
@@ -36,12 +37,8 @@ namespace IxMilia.Iges.Entities
         {
             this.RingRadius = Double(parameters, 0);
             this.DiscRadius = Double(parameters, 1);
-            this.Center.X = Double(parameters, 2);
-            this.Center.Y = Double(parameters, 3);
-            this.Center.Z = Double(parameters, 4);
-            this.Normal.X = Double(parameters, 5);
-            this.Normal.Y = Double(parameters, 6);
-            this.Normal.Z = DoubleOrDefault(parameters, 7, 1.0);
+            this.Center = IgesPoint.Point3D(parameters, 2);
+            this.Normal = IgesVector.ReadZAxis(parameters, 5);
             return 8;
         }
 
@@ -50,7 +47,7 @@ namespace IxMilia.Iges.Entities
             parameters.Add(this.RingRadius);
             parameters.Add(this.DiscRadius);
 
-            if (Center != IgesPoint.Origin || Normal != IgesVector.ZAxis)
+            if (Center != Point3D.Origin || Normal != IgesVector.ZAxis)
             {
                 parameters.Add(this.Center.X);
                 parameters.Add(this.Center.Y);

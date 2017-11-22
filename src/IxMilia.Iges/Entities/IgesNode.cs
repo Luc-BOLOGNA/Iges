@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -8,7 +9,7 @@ namespace IxMilia.Iges.Entities
     {
         public override IgesEntityType EntityType { get { return IgesEntityType.Node; } }
 
-        public IgesPoint Offset { get; set; }
+        public Point3D Offset { get; set; }
 
         public IgesTransformationMatrix DisplacementCoordinateSystem { get; set; }
 
@@ -18,13 +19,13 @@ namespace IxMilia.Iges.Entities
             set { EntitySubscript = value; }
         }
 
-        public IgesNode()
-            : this(IgesPoint.Origin)
+        public IgesNode(IgesFile file)
+            : this(file, Point3D.Origin)
         {
         }
 
-        public IgesNode(IgesPoint offset)
-            : base()
+        public IgesNode(IgesFile file, Point3D offset)
+            : base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.LogicalOrPositional;
             FormNumber = 0;
@@ -33,9 +34,7 @@ namespace IxMilia.Iges.Entities
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
-            this.Offset.X = Double(parameters, 0);
-            this.Offset.Y = Double(parameters, 1);
-            this.Offset.Z = Double(parameters, 2);
+            this.Offset = IgesPoint.Point3D(parameters, 0);
             binder.BindEntity(Integer(parameters, 3), e => DisplacementCoordinateSystem = e as IgesTransformationMatrix);
             return 4;
         }

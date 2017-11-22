@@ -28,15 +28,16 @@ namespace IxMilia.Iges.Entities
             set { FormNumber = (int)value; }
         }
 
-        internal IgesGeneralSymbol()
+        internal IgesGeneralSymbol(IgesFile file)
+            :base(file)
         {
             EntityUseFlag = IgesEntityUseFlag.Annotation;
             Leaders = new ListNonNull<IgesLeader>();
             Geometries = new ListNonNullWithMinimum<IgesEntity>(1);
         }
 
-        public IgesGeneralSymbol(IgesGeneralNote note, IEnumerable<IgesLeader> leaders, IEnumerable<IgesEntity> geometries)
-            : this()
+        public IgesGeneralSymbol(IgesFile file, IgesGeneralNote note, IEnumerable<IgesLeader> leaders, IEnumerable<IgesEntity> geometries)
+            : this(file)
         {
             Note = note;
             foreach (var leader in leaders)
@@ -58,17 +59,17 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            binder.BindEntity(Integer(parameters, index++), e => Note = e as IgesGeneralNote);
-            var geometryCount = Integer(parameters, index++);
+            binder.BindEntity(Integer(parameters, ref index), e => Note = e as IgesGeneralNote);
+            var geometryCount = Integer(parameters, ref index);
             for (int i = 0; i < geometryCount; i++)
             {
-                binder.BindEntity(Integer(parameters, index++), e => Geometries.Add(e));
+                binder.BindEntity(Integer(parameters, ref index), e => Geometries.Add(e));
             }
 
-            var leaderCount = Integer(parameters, index++);
+            var leaderCount = Integer(parameters, ref index);
             for (int i = 0; i < leaderCount; i++)
             {
-                binder.BindEntity(Integer(parameters, index++), e => Leaders.Add(e as IgesLeader));
+                binder.BindEntity(Integer(parameters, ref index), e => Leaders.Add(e as IgesLeader));
             }
 
             return index;

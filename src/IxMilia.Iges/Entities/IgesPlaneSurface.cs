@@ -6,6 +6,11 @@ namespace IxMilia.Iges.Entities
 {
     public class IgesPlaneSurface : IgesEntity
     {
+        public IgesPlaneSurface(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.PlaneSurface; } }
 
         public IgesLocation Point { get; set; }
@@ -21,11 +26,11 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             var index = 0;
-            binder.BindEntity(Integer(parameters, index++), point => Point = point as IgesLocation);
-            binder.BindEntity(Integer(parameters, index++), normal => Normal = normal as IgesDirection);
+            binder.BindEntity(Integer(parameters, ref index), point => Point = point as IgesLocation);
+            binder.BindEntity(Integer(parameters, ref index), normal => Normal = normal as IgesDirection);
             if (IsParameterized)
             {
-                binder.BindEntity(Integer(parameters, index++), refDir => ReferenceDirection = refDir as IgesDirection);
+                binder.BindEntity(Integer(parameters, ref index), refDir => ReferenceDirection = refDir as IgesDirection);
             }
 
             return index;

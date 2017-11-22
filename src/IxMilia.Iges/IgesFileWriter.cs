@@ -33,7 +33,7 @@ namespace IxMilia.Iges
             {
                 if (!writerState.EntityMap.ContainsKey(entity))
                 {
-                    entity.AddDirectoryAndParameterLines(writerState);
+                    entity.AddDirectoryAndParameterLines(writerState, file);
                 }
             }
 
@@ -69,35 +69,38 @@ namespace IxMilia.Iges
 
         private static void PopulateGlobalLines(IgesFile file, List<string> globalLines)
         {
-            var fields = new object[26];
-            fields[0] = file.FieldDelimiter.ToString();
-            fields[1] = file.RecordDelimiter.ToString();
-            fields[2] = file.Identification;
-            fields[3] = file.FullFileName;
-            fields[4] = file.SystemIdentifier;
-            fields[5] = file.SystemVersion;
-            fields[6] = file.IntegerSize;
-            fields[7] = file.SingleSize;
-            fields[8] = file.DecimalDigits;
-            fields[9] = file.DoubleMagnitude;
-            fields[10] = file.DoublePrecision;
-            fields[11] = file.Identifier;
-            fields[12] = file.ModelSpaceScale;
-            fields[13] = (int)file.ModelUnits;
-            fields[14] = file.CustomModelUnits;
-            fields[15] = file.MaxLineWeightGraduations;
-            fields[16] = file.MaxLineWeight;
-            fields[17] = file.TimeStamp;
-            fields[18] = file.MinimumResolution;
-            fields[19] = file.MaxCoordinateValue;
-            fields[20] = file.Author;
-            fields[21] = file.Organization;
-            fields[22] = (int)file.IgesVersion;
-            fields[23] = (int)file.DraftingStandard;
-            fields[24] = file.ModifiedTime;
-            fields[25] = file.ApplicationProtocol;
-
-            AddParametersToStringList(fields, globalLines, file.FieldDelimiter, file.RecordDelimiter);
+            AddParametersToStringList(
+                new object[] {
+                    file.FieldDelimiter.ToString(),
+                    file.RecordDelimiter.ToString(),
+                    file.Identification,
+                    file.FullFileName,
+                    file.SystemIdentifier,
+                    file.SystemVersion,
+                    file.IntegerSize,
+                    file.SingleSize,
+                    file.DecimalDigits,
+                    file.DoubleMagnitude,
+                    file.DoublePrecision,
+                    file.Identifier,
+                    file.ModelSpaceScale,
+                    (int)file.ModelUnits,
+                    file.CustomModelUnits,
+                    file.MaxLineWeightGraduations,
+                    file.MaxLineWeight,
+                    file.TimeStamp,
+                    file.MinimumResolution,
+                    file.MaxCoordinateValue,
+                    file.Author,
+                    file.Organization,
+                    (int)file.IgesVersion,
+                    (int)file.DraftingStandard,
+                    file.ModifiedTime,
+                    file.ApplicationProtocol
+                },
+                globalLines,
+                file.FieldDelimiter,
+                file.RecordDelimiter);
         }
 
         internal static int AddParametersToStringList(object[] parameters, List<string> stringList, char fieldDelimiter, char recordDelimiter, int maxLength = IgesFile.MaxDataLength, string lineSuffix = null, string comment = null)
@@ -116,6 +119,19 @@ namespace IxMilia.Iges
                 sb.Clear();
                 addedLines++;
             };
+
+            /*
+            StringBuilder parameters_sb = new StringBuilder(parameters.Length * 2);
+            parameters_sb.Append(ParameterToString(parameters[0]));
+            for (int i = 1; i < parameters.Length; i++)
+            {
+                parameters_sb.Append(recordDelimiter);
+                parameters_sb.Append(ParameterToString(parameters[i]));
+            }
+            parameters_sb.Append(fieldDelimiter);
+            string parameters_str = parameters_sb.ToString();
+            */
+
             for (int i = 0; i < parameters.Length; i++)
             {
                 var delim = (i == parameters.Length - 1) ? recordDelimiter : fieldDelimiter;
@@ -200,15 +216,15 @@ namespace IxMilia.Iges
         {
             if (parameter == null)
                 return string.Empty;
-            else if (parameter.GetType() == typeof(int))
+            else if (parameter is int)
                 return ParameterToString((int)parameter);
-            else if (parameter.GetType() == typeof(double))
+            else if (parameter is double)
                 return ParameterToString((double)parameter);
-            else if (parameter.GetType() == typeof(string))
+            else if (parameter is string)
                 return ParameterToString((string)parameter);
-            else if (parameter.GetType() == typeof(DateTime))
+            else if (parameter is DateTime)
                 return ParameterToString((DateTime)parameter);
-            else if (parameter.GetType() == typeof(bool))
+            else if (parameter is bool)
                 return ParameterToString((bool)parameter);
             else
             {
@@ -225,8 +241,10 @@ namespace IxMilia.Iges
         private static string ParameterToString(double parameter)
         {
             var str = parameter.ToString(CultureInfo.InvariantCulture);
-            if (!(str.Contains(".") || str.Contains("e") || str.Contains("E") || str.Contains("d") || str.Contains("D")))
-                str += '.'; // add trailing decimal point
+            
+            //if (!(str.Contains(".") || str.Contains("e") || str.Contains("E") || str.Contains("d") || str.Contains("D")))
+            if (str.IndexOf('.') + str.IndexOf('e') + str.IndexOf('E') + str.IndexOf('d') + str.IndexOf('D') == -5)
+                    str += '.'; // add trailing decimal point
             return str;
         }
 
@@ -235,7 +253,7 @@ namespace IxMilia.Iges
             if (string.IsNullOrEmpty(parameter))
                 return string.Empty;
             else
-                return string.Format("{0}H{1}", parameter.Length, parameter);
+                return parameter.Length.ToString() + "H" + parameter;
         }
 
         internal static string ParameterToString(DateTime parameter)
@@ -252,8 +270,7 @@ namespace IxMilia.Iges
         {
             for (int i = 0; i < lines.Count; i++)
             {
-                var line = MakeFileLine(sectionType, lines[i], i + 1);
-                writer.Write(line);
+                writer.Write(MakeFileLine(sectionType, lines[i], i + 1));
             }
         }
 

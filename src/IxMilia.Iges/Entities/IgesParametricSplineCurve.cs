@@ -53,8 +53,8 @@ namespace IxMilia.Iges.Entities
 
         public List<IgesSplinePolynomialSegment> Segments { get; private set; }
 
-        public IgesParametricSplineCurve()
-            : base()
+        public IgesParametricSplineCurve(IgesFile file)
+            : base(file)
         {
             SplineType = IgesSplineType.Linear;
             Segments = new List<IgesSplinePolynomialSegment>();
@@ -63,46 +63,46 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            this.SplineType = (IgesSplineType)Integer(parameters, index++);
-            this.DegreeOfContinuity = Integer(parameters, index++);
-            this.NumberOfDimensions = Integer(parameters, index++);
-            var segmentCount = Integer(parameters, index++);
+            this.SplineType = (IgesSplineType)Integer(parameters, ref index);
+            this.DegreeOfContinuity = Integer(parameters, ref index);
+            this.NumberOfDimensions = Integer(parameters, ref index);
+            var segmentCount = Integer(parameters, ref index);
             for (int i = 0; i < segmentCount; i++)
             {
-                var breakPoint = Double(parameters, index++);
+                var breakPoint = Double(parameters, ref index);
                 Segments.Add(new IgesSplinePolynomialSegment() { BreakPoint = breakPoint });
             }
 
             for (int i = 0; i < segmentCount; i++)
             {
-                Segments[i].AX = Double(parameters, index++);
-                Segments[i].BX = Double(parameters, index++);
-                Segments[i].CX = Double(parameters, index++);
-                Segments[i].DX = Double(parameters, index++);
-                Segments[i].AY = Double(parameters, index++);
-                Segments[i].BY = Double(parameters, index++);
-                Segments[i].CY = Double(parameters, index++);
-                Segments[i].DY = Double(parameters, index++);
-                Segments[i].AZ = Double(parameters, index++);
-                Segments[i].BZ = Double(parameters, index++);
-                Segments[i].CZ = Double(parameters, index++);
-                Segments[i].DZ = Double(parameters, index++);
+                Segments[i].AX = Double(parameters, ref index);
+                Segments[i].BX = Double(parameters, ref index);
+                Segments[i].CX = Double(parameters, ref index);
+                Segments[i].DX = Double(parameters, ref index);
+                Segments[i].AY = Double(parameters, ref index);
+                Segments[i].BY = Double(parameters, ref index);
+                Segments[i].CY = Double(parameters, ref index);
+                Segments[i].DY = Double(parameters, ref index);
+                Segments[i].AZ = Double(parameters, ref index);
+                Segments[i].BZ = Double(parameters, ref index);
+                Segments[i].CZ = Double(parameters, ref index);
+                Segments[i].DZ = Double(parameters, ref index);
             }
 
             for (int i = 0; i < segmentCount; i++)
             {
-                Segments[i].XValue = Double(parameters, index++);
-                Segments[i].XFirstDerivative = Double(parameters, index++);
-                Segments[i].XSecondDerivative = Double(parameters, index++);
-                Segments[i].XThirdDerivative = Double(parameters, index++);
-                Segments[i].YValue = Double(parameters, index++);
-                Segments[i].YFirstDerivative = Double(parameters, index++);
-                Segments[i].YSecondDerivative = Double(parameters, index++);
-                Segments[i].YThirdDerivative = Double(parameters, index++);
-                Segments[i].ZValue = Double(parameters, index++);
-                Segments[i].ZFirstDerivative = Double(parameters, index++);
-                Segments[i].ZSecondDerivative = Double(parameters, index++);
-                Segments[i].ZThirdDerivative = Double(parameters, index++);
+                Segments[i].XValue = Double(parameters, ref index);
+                Segments[i].XFirstDerivative = Double(parameters, ref index);
+                Segments[i].XSecondDerivative = Double(parameters, ref index);
+                Segments[i].XThirdDerivative = Double(parameters, ref index);
+                Segments[i].YValue = Double(parameters, ref index);
+                Segments[i].YFirstDerivative = Double(parameters, ref index);
+                Segments[i].YSecondDerivative = Double(parameters, ref index);
+                Segments[i].YThirdDerivative = Double(parameters, ref index);
+                Segments[i].ZValue = Double(parameters, ref index);
+                Segments[i].ZFirstDerivative = Double(parameters, ref index);
+                Segments[i].ZSecondDerivative = Double(parameters, ref index);
+                Segments[i].ZThirdDerivative = Double(parameters, ref index);
             }
 
             return index;

@@ -6,16 +6,21 @@ namespace IxMilia.Iges.Entities
 {
     public class IgesSurfaceOfRevolution : IgesEntity
     {
+        public IgesSurfaceOfRevolution(IgesFile file)
+            : base(file)
+        {
+        }
+
         public override IgesEntityType EntityType { get { return IgesEntityType.SurfaceOfRevolution; } }
 
-        public IgesLine AxisOfRevolution { get; set; }
+        public IgesLine2D AxisOfRevolution { get; set; }
         public IgesEntity Generatrix { get; set; }
         public double StartAngle { get; set; }
         public double EndAngle { get; set; }
 
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
-            binder.BindEntity(Integer(parameters, 0), e => AxisOfRevolution = e as IgesLine);
+            binder.BindEntity(Integer(parameters, 0), e => AxisOfRevolution = e as IgesLine2D);
             binder.BindEntity(Integer(parameters, 1), e => Generatrix = e);
             StartAngle = Double(parameters, 2);
             EndAngle = Double(parameters, 3);

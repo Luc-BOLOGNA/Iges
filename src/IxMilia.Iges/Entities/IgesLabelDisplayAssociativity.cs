@@ -1,5 +1,6 @@
 ﻿// Copyright (c) IxMilia.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using MathNet.Spatial.Euclidean;
 using System.Collections.Generic;
 
 namespace IxMilia.Iges.Entities
@@ -7,7 +8,7 @@ namespace IxMilia.Iges.Entities
     public class IgesLabelPlacement
     {
         public IgesViewBase View { get; set; }
-        public IgesPoint Location { get; set; }
+        public Point3D Location { get; set; }
         public IgesLeader Leader { get; set; }
         public int Level { get; set; }
         public IgesEntity Label { get; set; }
@@ -16,7 +17,7 @@ namespace IxMilia.Iges.Entities
         {
         }
 
-        public IgesLabelPlacement(IgesViewBase view, IgesPoint location, IgesLeader leader, int level, IgesEntity label)
+        public IgesLabelPlacement(IgesViewBase view, Point3D location, IgesLeader leader, int level, IgesEntity label)
         {
             View = view;
             Location = location;
@@ -31,8 +32,8 @@ namespace IxMilia.Iges.Entities
         public List<IgesLabelPlacement> LabelPlacements { get; private set; }
         public IgesEntity AssociatedEntity { get; internal set; }
 
-        public IgesLabelDisplayAssociativity()
-            : base()
+        public IgesLabelDisplayAssociativity(IgesFile file)
+            : base(file)
         {
             FormNumber = 5;
             LabelPlacements = new List<IgesLabelPlacement>();
@@ -41,18 +42,18 @@ namespace IxMilia.Iges.Entities
         internal override int ReadParameters(List<string> parameters, IgesReaderBinder binder)
         {
             int index = 0;
-            var labelPlacementCount = Integer(parameters, index++);
+            var labelPlacementCount = Integer(parameters, ref index);
             for (int i = 0; i < labelPlacementCount; i++)
             {
                 var labelPlacement = new IgesLabelPlacement();
-                binder.BindEntity(Integer(parameters, index++), e => labelPlacement.View = e as IgesViewBase);
-                var x = Double(parameters, index++);
-                var y = Double(parameters, index++);
-                var z = Double(parameters, index++);
-                labelPlacement.Location = new IgesPoint(x, y, z);
-                binder.BindEntity(Integer(parameters, index++), e => labelPlacement.Leader = e as IgesLeader);
-                labelPlacement.Level = Integer(parameters, index++);
-                binder.BindEntity(Integer(parameters, index++), e => labelPlacement.Label = e);
+                binder.BindEntity(Integer(parameters, ref index), e => labelPlacement.View = e as IgesViewBase);
+                var x = Double(parameters, ref index);
+                var y = Double(parameters, ref index);
+                var z = Double(parameters, ref index);
+                labelPlacement.Location = new Point3D(x, y, z);
+                binder.BindEntity(Integer(parameters, ref index), e => labelPlacement.Leader = e as IgesLeader);
+                labelPlacement.Level = Integer(parameters, ref index);
+                binder.BindEntity(Integer(parameters, ref index), e => labelPlacement.Label = e);
                 LabelPlacements.Add(labelPlacement);
             }
 

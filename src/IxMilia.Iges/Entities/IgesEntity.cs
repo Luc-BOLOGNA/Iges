@@ -115,7 +115,7 @@ namespace IxMilia.Iges.Entities
         }
 
         public string Comment { get; set; }
-        public int LineWeight { get; set; }
+        public double LineWeight { get; set; }
 
         private int _structurePointer;
         private int _labelDisplayPointer;
@@ -141,14 +141,15 @@ namespace IxMilia.Iges.Entities
         public List<IgesEntity> AssociatedEntities { get; }
         public List<IgesEntity> Properties { get; }
 
-        protected IgesEntity()
+        protected IgesEntity(IgesFile file)
         {
+            File = file;
             Levels = new HashSet<int>();
             AssociatedEntities = new List<IgesEntity>();
             Properties = new List<IgesEntity>();
             if (!(this is IgesTransformationMatrix))
             {
-                TransformationMatrix = IgesTransformationMatrix.Identity;
+                TransformationMatrix = IgesTransformationMatrix.Identity(file);
             }
         }
 
@@ -180,10 +181,10 @@ namespace IxMilia.Iges.Entities
 
         internal void ReadCommonPointers(List<string>parameters, int nextIndex, IgesReaderBinder binder)
         {
-            var associatedPointerCount = Integer(parameters, nextIndex++);
+            var associatedPointerCount = Integer(parameters, ref nextIndex);
             for (int i = 0; i < associatedPointerCount; i++)
             {
-                binder.BindEntity(Integer(parameters, nextIndex++), e =>
+                binder.BindEntity(Integer(parameters, ref nextIndex), e =>
                 {
                     if (e != null)
                     {
@@ -193,10 +194,10 @@ namespace IxMilia.Iges.Entities
                 });
             }
 
-            var propertyPointerCount = Integer(parameters, nextIndex++);
+            var propertyPointerCount = Integer(parameters, ref nextIndex);
             for (int i = 0; i < propertyPointerCount; i++)
             {
-                binder.BindEntity(Integer(parameters, nextIndex++), e => Properties.Add(e));
+                binder.BindEntity(Integer(parameters, ref nextIndex), e => Properties.Add(e));
             }
         }
 
@@ -254,7 +255,7 @@ namespace IxMilia.Iges.Entities
             }
             else
             {
-                TransformationMatrix = IgesTransformationMatrix.Identity;
+                TransformationMatrix = IgesTransformationMatrix.Identity(dir.File);
             }
 
             // label display (field 8)
@@ -285,13 +286,11 @@ namespace IxMilia.Iges.Entities
             {
                 value = "00000000";
             }
-
-            if (value.Length < 8)
+            else if (value.Length < 8)
             {
                 value = new string('0', 8 - value.Length) + value;
             }
-
-            if (value.Length > 8)
+            else if (value.Length > 8)
             {
                 value = value.Substring(0, 8);
             }
@@ -319,7 +318,7 @@ namespace IxMilia.Iges.Entities
             this._transformationMatrixPointer = directoryData.TransformationMatrixPointer;
             this._labelDisplayPointer = directoryData.LableDisplay;
             SetStatusNumber(directoryData.StatusNumber);
-            this.LineWeight = directoryData.LineWeight;
+            this.LineWeight = directoryData.LineWeight * File.MaxLineWeightFactor;
             if (directoryData.Color < 0)
             {
                 this.Color = IgesColorNumber.Custom;
@@ -335,9 +334,9 @@ namespace IxMilia.Iges.Entities
             this.EntitySubscript = directoryData.EntitySubscript;
         }
 
-        private IgesDirectoryData GetDirectoryData(int color, int lineFontPattern)
+        private IgesDirectoryData GetDirectoryData(int color, int lineFontPattern, IgesFile file)
         {
-            var dir = new IgesDirectoryData();
+            var dir = new IgesDirectoryData(file);
             dir.EntityType = EntityType;
             dir.Structure = this._structurePointer;
             dir.LineFontPattern = lineFontPattern;
@@ -346,7 +345,7 @@ namespace IxMilia.Iges.Entities
             dir.TransformationMatrixPointer = this._transformationMatrixPointer;
             dir.LableDisplay = this._labelDisplayPointer;
             dir.StatusNumber = this.GetStatusNumber();
-            dir.LineWeight = this.LineWeight;
+            dir.LineWeight = (int)Math.Truncate(this.LineWeight / File.MaxLineWeightFactor);
             dir.Color = color;
             dir.LineCount = this._lineCount;
             dir.FormNumber = this.FormNumber;
@@ -355,7 +354,7 @@ namespace IxMilia.Iges.Entities
             return dir;
         }
 
-        internal int AddDirectoryAndParameterLines(WriterState writerState)
+        internal int AddDirectoryAndParameterLines(WriterState writerState, IgesFile file)
         {
             OnBeforeWrite();
             writerState.ReportReferencedEntities(GetReferencedEntities());
@@ -388,7 +387,7 @@ namespace IxMilia.Iges.Entities
             }
             else
             {
-                _levelsPointer = -writerState.GetLevelsPointer(Levels);
+                _levelsPointer = -writerState.GetLevelsPointer(Levels, file);
             }
 
             // write view (field 6)
@@ -455,7 +454,7 @@ namespace IxMilia.Iges.Entities
             this._lineCount = IgesFileWriter.AddParametersToStringList(parameters.ToArray(), writerState.ParameterLines, writerState.FieldDelimiter, writerState.RecordDelimiter,
                 lineSuffix: string.Format(" {0,7}", nextDirectoryIndex),
                 comment: Comment);
-            var dir = GetDirectoryData(color, lineFontPattern);
+            var dir = GetDirectoryData(color, lineFontPattern, file);
             dir.ParameterPointer = nextParameterIndex;
             dir.ToString(writerState.DirectoryLines);
 
@@ -464,54 +463,64 @@ namespace IxMilia.Iges.Entities
             return nextDirectoryIndex;
         }
 
-        protected double Double(List<string> values, int index)
+        internal static double Double(List<string> values, ref int index, double defaultValue = 0.0)
         {
-            return IgesParameterReader.Double(values, index);
+            return IgesParameterReader.Double(values, ref index, defaultValue);
+        }
+        internal static double Double(List<string> values, int index, double defaultValue = 0.0)
+        {
+            return IgesParameterReader.Double(values, index, defaultValue);
         }
 
-        protected double DoubleOrDefault(List<string> values, int index, double defaultValue)
+
+        internal static int Integer(List<string> values, ref int index, int defaultValue = 0)
         {
-            return IgesParameterReader.DoubleOrDefault(values, index, defaultValue);
+            return IgesParameterReader.Integer(values, ref index, defaultValue);
         }
 
-        protected int Integer(List<string> values, int index)
+        internal static int Integer(List<string> values, int index, int defaultValue = 0)
         {
-            return IgesParameterReader.Integer(values, index);
+            return IgesParameterReader.Integer(values, index, defaultValue);
         }
 
-        protected int IntegerOrDefault(List<string> values, int index, int defaultValue)
+
+        internal static string String(List<string> values, ref int index, string defaultValue = null)
         {
-            return IgesParameterReader.IntegerOrDefault(values, index, defaultValue);
+            return IgesParameterReader.String(values, ref index, defaultValue);
         }
 
-        protected string String(List<string> values, int index)
+        internal static string String(List<string> values, int index, string defaultValue = null)
         {
-            return IgesParameterReader.String(values, index);
+            return IgesParameterReader.String(values, index, defaultValue);
         }
 
-        protected string StringOrDefault(List<string> values, int index, string defaultValue)
+
+        internal static bool Boolean(List<string> values, ref int index, bool defaultValue = false)
         {
-            return IgesParameterReader.StringOrDefault(values, index, defaultValue);
+            return IgesParameterReader.Boolean(values, ref index, defaultValue);
         }
 
-        protected bool Boolean(List<string> values, int index)
+        internal static bool Boolean(List<string> values, int index, bool defaultValue = false)
         {
-            return IgesParameterReader.Boolean(values, index);
+            return IgesParameterReader.Boolean(values, index, defaultValue);
         }
 
-        protected bool BooleanOrDefault(List<string> values, int index, bool defaultValue)
+        internal static DateTime DateTime(List<string> values, ref int index)
         {
-            return IgesParameterReader.BooleanOrDefault(values, index, defaultValue);
+            return IgesParameterReader.DateTime(values, ref index);
         }
-
-        protected DateTime DateTime(List<string> values, int index)
+        internal static DateTime DateTime(List<string> values, int index)
         {
             return IgesParameterReader.DateTime(values, index);
         }
 
-        protected DateTime DateTimeOrDefault(List<string> values, int index, DateTime defaultValue)
+        internal static DateTime DateTime(List<string> values, ref int index, DateTime defaultValue)
         {
-            return IgesParameterReader.DateTimeOrDefault(values, index, defaultValue);
+            return IgesParameterReader.DateTime(values, ref index, defaultValue);
+        }
+        internal static DateTime DateTime(List<string> values, int index, DateTime defaultValue)
+        {
+            return IgesParameterReader.DateTime(values, index, defaultValue);
         }
     }
 }
