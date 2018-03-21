@@ -41,7 +41,7 @@ namespace IxMilia.Iges
                     throw new IgesException("Expected line length of 80 characters.");
                 var data = line.Substring(0, IgesFile.MaxDataLength);
                 var sectionType = SectionTypeFromCharacter(line[IgesFile.MaxDataLength]);
-                var lineNumber = int.Parse(line.Substring(IgesFile.MaxDataLength + 1).TrimStart());
+                var lineNumber = line.Substring(IgesFile.MaxDataLength + 1).TrimStart().ToInt();
 
                 if (sectionType == IgesSectionType.Terminate)
                 {
@@ -50,16 +50,16 @@ namespace IxMilia.Iges
                     terminateLine = data;
 
                     // verify terminate data and quit
-                    var startCount = int.Parse(terminateLine.Substring(1, 7));
+                    var startCount = terminateLine.Substring(1, 7).ToInt();
                     if (startLines.Count != startCount)
                         throw new IgesException("Incorrect number of start lines reported");
-                    var globalCount = int.Parse(terminateLine.Substring(9, 7));
+                    var globalCount = terminateLine.Substring(9, 7).ToInt();
                     if (globalLines.Count != globalCount)
                         throw new IgesException("Incorrect number of global lines reported");
-                    var directoryCount = int.Parse(terminateLine.Substring(17, 7));
+                    var directoryCount = terminateLine.Substring(17, 7).ToInt();
                     if (directoryLines.Count != directoryCount)
                         throw new IgesException("Incorrect number of directory lines reported");
-                    var parameterCount = int.Parse(terminateLine.Substring(25, 7));
+                    var parameterCount = terminateLine.Substring(25, 7).ToInt();
                     if (parameterLines.Count != parameterCount)
                         throw new IgesException("Incorrect number of parameter lines reported");
                     break;
@@ -159,7 +159,7 @@ namespace IxMilia.Iges
                             {
                                 if (state == ParameterParseState.ParsingEntityNumber)
                                 {
-                                    entityNumber = int.Parse(current.ToString());
+                                    entityNumber = current.ToString().ToInt();
                                 }
                                 else
                                 {
@@ -173,7 +173,7 @@ namespace IxMilia.Iges
                             {
                                 if (state == ParameterParseState.ParsingEntityNumber)
                                 {
-                                    entityNumber = int.Parse(current.ToString());
+                                    entityNumber = current.ToString().ToInt();
                                 }
                                 else
                                 {
@@ -185,7 +185,7 @@ namespace IxMilia.Iges
                             }
                             else if (ch == IgesFile.StringSentinelCharacter)
                             {
-                                stringLength = int.Parse(current.ToString());
+                                stringLength = current.ToString().ToInt();
                                 current.Clear();
                                 state = ParameterParseState.ParsingString;
                             }
@@ -354,7 +354,7 @@ namespace IxMilia.Iges
                 return defaultValue;
             }
 
-            int length = int.Parse(lengthString);
+            int length = lengthString.ToInt();
             sb.Clear();
 
             // parse content
@@ -399,7 +399,7 @@ namespace IxMilia.Iges
             if (string.IsNullOrWhiteSpace(intString))
                 return defaultValue;
             else
-                return int.Parse(sb.ToString());
+                return sb.ToString().ToInt();
         }
 
         private static double ParseDouble(string str, ref int index, double defaultValue = 0.0)
@@ -429,7 +429,7 @@ namespace IxMilia.Iges
             if (string.IsNullOrWhiteSpace(doubleString))
                 return defaultValue;
             else
-                return double.Parse(sb.ToString());
+                return sb.ToString().ToDouble();
         }
 
         internal static DateTime ParseDateTime(string value, DateTime defaultValue)
@@ -443,12 +443,12 @@ namespace IxMilia.Iges
             if (!match.Success)
                 throw new IgesException("Invalid date/time format");
             Debug.Assert(match.Groups.Count == 9);
-            int year = int.Parse(match.Groups[1].Value);
-            int month = int.Parse(match.Groups[4].Value);
-            int day = int.Parse(match.Groups[5].Value);
-            int hour = int.Parse(match.Groups[6].Value);
-            int minute = int.Parse(match.Groups[7].Value);
-            int second = int.Parse(match.Groups[8].Value);
+            int year = match.Groups[1].Value.ToInt();
+            int month = match.Groups[4].Value.ToInt();
+            int day = match.Groups[5].Value.ToInt();
+            int hour = match.Groups[6].Value.ToInt();
+            int minute = match.Groups[7].Value.ToInt();
+            int second = match.Groups[8].Value.ToInt();
             if (match.Groups[1].Value.Length == 2)
                 year += 1900;
             return new DateTime(year, month, day, hour, minute, second);

@@ -82,22 +82,22 @@ namespace IxMilia.Iges
         public static IgesDirectoryData FromRawLines(IgesFile file, string line1, string line2)
         {
             var dir = new IgesDirectoryData(file);
-            dir.EntityType = (IgesEntityType)int.Parse(GetField(line1, 1));
-            dir.ParameterPointer = int.Parse(GetField(line1, 2));
-            dir.Structure = int.Parse(GetField(line1, 3));
-            dir.LineFontPattern = int.Parse(GetField(line1, 4));
-            dir.Level = int.Parse(GetField(line1, 5));
-            dir.View = int.Parse(GetField(line1, 6));
-            dir.TransformationMatrixPointer = int.Parse(GetField(line1, 7));
-            dir.LableDisplay = int.Parse(GetField(line1, 8));
+            dir.EntityType = (IgesEntityType)GetField(line1, 1).ToInt();
+            dir.ParameterPointer = GetField(line1, 2).ToInt();
+            dir.Structure = GetField(line1, 3).ToInt();
+            dir.LineFontPattern = GetField(line1, 4).ToInt();
+            dir.Level = GetField(line1, 5).ToInt();
+            dir.View = GetField(line1, 6).ToInt();
+            dir.TransformationMatrixPointer = GetField(line1, 7).ToInt();
+            dir.LableDisplay = GetField(line1, 8).ToInt();
             dir.StatusNumber = GetField(line1, 9);
 
-            dir.LineWeight = int.Parse(GetField(line2, 2));
-            dir.Color = int.Parse(GetField(line2, 3));
-            dir.LineCount = int.Parse(GetField(line2, 4));
-            dir.FormNumber = int.Parse(GetField(line2, 5));
+            dir.LineWeight = GetField(line2, 2).ToInt();
+            dir.Color = GetField(line2, 3).ToInt();
+            dir.LineCount = GetField(line2, 4).ToInt();
+            dir.FormNumber = GetField(line2, 5).ToInt();
             dir.EntityLabel = GetField(line2, 8, null);
-            dir.EntitySubscript = uint.Parse(GetField(line2, 9));
+            dir.EntitySubscript = GetField(line2, 9).ToUInt();
             return dir;
         }
 
